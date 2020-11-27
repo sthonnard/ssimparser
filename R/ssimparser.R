@@ -1,13 +1,13 @@
-#' ssimparser: A Tool For Parsing SSIM Schedules.
+#' ssimparser: A Tool For Parsing Standard Schedules Information.
 #'
-#' This package parses SSIM Schedules (type 2 and 3) into a Data Frame.
+#' This package parses SSIM file (type 2 and 3) into a Data Frame.
 #'  Bugs report:\cr
 #'  \url{https://github.com/sthonnard/ssimparser}
 #'
 #'
 #' @section ssimparser functions:
 #' \strong{get_ssim_collist()}\cr
-#' Get the list of columns that can be parsed from SSIM Schedules\cr
+#' Get the list of columns that can be parsed from SSIM\cr
 #'
 #' \strong{load_ssim(ssim_file)}\cr
 #' Parse SSIM file into a Data Frame.\cr
@@ -24,7 +24,7 @@ source("./R/f_ssimparser.R")
 
 #' get_ssim_collist
 #'
-#' Get the list of columns that can be parsed from SSIM Schedules
+#' Get the list of columns that can be parsed from SSIM
 #' @param getall  Get all columns (TRUE/FALSE).
 #'
 #' @return Vector containing the columns
@@ -61,7 +61,7 @@ get_ssim_collist <- function(getall=TRUE)
              "type3.code_sharing",                     "type3.traffic_restriction_code",         "type3.traffic_restriction_code_leg",
              "type3.aircraft_configuration",           "type3.date_variation",
 
-             # Not in the SSIM Schedules file but derived during the loading:
+             # Not in the SSIM file but derived during the loading:
              "type3.std_utc","type3.sta_utc", "flight.flight_date", "type3.adep_icao", "type3.ades_icao"
     ))
   }
@@ -307,7 +307,7 @@ load_ssim <- function(ssim_file = "AUA_20201022.txt", nestres = FALSE, collist =
 #' @export
 #'
 #' @examples
-#' # Display the total traffic per day from two SSIM schedules files
+#' # Display the total traffic per day from two SSIM files
 #' load_ssim(c("./AFR_20201115.txt", "./AFR_20201116.txt"), cleannames = FALSE) %>%
 #' group_by(flight_date = as.Date(flight.flight_date)) %>%
 #' summarise(total_flights = n()) %>%
