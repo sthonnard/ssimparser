@@ -91,6 +91,12 @@ get_ssim_collist <- function(getall=TRUE)
 #' @examples
 #' # Load SSIM file
 #' ssim <- load_ssim("./AFR_20201115.txt")
+#'
+#' Expand schedules to flights and display the traffic by month
+#' library(dplyr)
+#' ssimparser::load_ssim(ssim_file = get_ssim_sample(), expand_sched = TRUE) %>%
+#'  group_by(format(flight.flight_date,"%Y-%m"), adep_icao) %>%
+#'  summarise(n=n())
 load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist = get_ssim_collist(getall = FALSE),
                       clean_col_names=TRUE,
                       unpivot_days_of_op = FALSE,
