@@ -1,3 +1,2 @@
 # ssimparser
-A Tool For Parsing SSIM files.\
-This package parses Standard Schedules Information (type 2 and 3) into a Data Frame.
+A tool for parsing IATA SSIM Schedules (Chapter 7) into a Data Frame.

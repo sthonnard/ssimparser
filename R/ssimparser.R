@@ -1,6 +1,6 @@
-#' ssimparser: A Tool For Parsing Standard Schedules Information.
+#' ssimparser: A Tool For Parsing IATA SSIM Schedules (Chapter 7).
 #'
-#' This package parses SSIM file (type 2 and 3) into a Data Frame.
+#' This package parses SSIM file (types 2 and 3) into a Data Frame.
 #'  Bugs report:\cr
 #'  \url{https://github.com/sthonnard/ssimparser}
 #'
@@ -13,7 +13,7 @@
 #' Parse SSIM file into a Data Frame.\cr
 #'
 #' \strong{load_ssim_files(ssim_file)}\cr
-#' Parse multiple SSIM files, convert to flights,  and resturn the result into a Data Frame.\cr
+#' Parse multiple SSIM files, convert to flights, and return the result into a Data Frame.\cr
 #'
 #' @docType package
 #' @name ssimparser
@@ -67,7 +67,7 @@ get_ssim_collist <- function(getall=TRUE)
   }
   else
   {
-    return(c("type2.iata_airline","type3.flight_number", "type3.service_type", "type3.period_from", "type3.period_to",
+    return(c("type2.schedule_status", "type2.iata_airline","type3.flight_number", "type3.service_type", "type3.period_from", "type3.period_to",
              "type3.days_of_operation", "type3.adep_iata", "type3.ades_iata",
              "type3.aircraft_type_iata", "type3.code_sharing",
 
@@ -78,12 +78,12 @@ get_ssim_collist <- function(getall=TRUE)
 #' load_ssim
 #'
 #' Load SSIM file into a Data Frame.
-#' @param ssim_file  Path to the SSIM file.
-#' @param nestres  Nest SSIM type 3 into type 2 (TRUE/FALSE). Default to FALSE.
+#' @param ssim_file  Path to the SSIM file or string containing the content to load.
+#' @param nested_df  Nest SSIM type 3 into type 2 (TRUE/FALSE). Default to FALSE.
 #' @param collist  List of columns that need to be present in the final Data Frame. get_ssim_collist() to get the full list.
-#' @param cleannames  Clean column names in the final Data Frame by removing type2/type3 prefixes (TRUE/FALSE). Default TRUE.
-#' @param punpivot  Unpivot the schedules by creating a schedule by day of operation (TRUE/FALSE). Default FALSE.
-#' @param pexpand  Instantiate flights from the schedules.
+#' @param clean_col_names  Clean column names in the final Data Frame by removing type2/type3 prefixes (TRUE/FALSE). Default TRUE.
+#' @param unpivot_days_of_op  Unpivot the schedules by creating a schedule by day of operation (TRUE/FALSE). Default FALSE.
+#' @param expand_sched  Instantiate flights from the schedules.
 #'
 #' @return Data Frame (nested or not) containing the schedules (or instantiated flights).
 #' @export
@@ -91,18 +91,25 @@ get_ssim_collist <- function(getall=TRUE)
 #' @examples
 #' # Load SSIM file
 #' ssim <- load_ssim("./AFR_20201115.txt")
-load_ssim <- function(ssim_file = "AUA_20201022.txt", nestres = FALSE, collist = get_ssim_collist(getall = FALSE),
-                      cleannames=TRUE,
-                      punpivot = TRUE,
-                      pexpand = FALSE)
+load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist = get_ssim_collist(getall = FALSE),
+                      clean_col_names=TRUE,
+                      unpivot_days_of_op = FALSE,
+                      expand_sched = FALSE)
 {
 
   ssimdf <- data.frame()
 
-  con <- base::file(ssim_file, "r")
-  ssim <- base::strsplit(base::readLines(con),"\n")
+  if (stringr::str_detect(ssim_file, "\n"))
+  { # Load SSIM provided as characters
+    ssim <- stringr::str_split(ssim_file,"\n")[[1]]
+  }
+  else
+  { # Load a file
+    con <- base::file(ssim_file, "r")
+    ssim <- base::strsplit(base::readLines(con),"\n")
+  }
 
-  print(paste(ssim_file,"has",length(ssim),"rows"))
+  print(paste("File to load has",length(ssim),"rows"))
   if (length(ssim) == 0){stop(paste(ssim_file, "is empty!"))}
   ssimdf <- as.data.frame(matrix(ssim, ncol = 1, byrow = TRUE))
   colnames(ssimdf) <- "lin"
@@ -112,7 +119,8 @@ load_ssim <- function(ssim_file = "AUA_20201022.txt", nestres = FALSE, collist =
 
   print(paste("dataframe has",nrow(ssimdf),"rows"))
   rm(ssim)
-  close(con)
+  if (exists("con")){close(con)}
+
 
   ssimdf %>% dplyr::filter(stringr::str_sub(lin, 1, 1) == "2") %>%
     dplyr::mutate(
@@ -190,20 +198,20 @@ load_ssim <- function(ssim_file = "AUA_20201022.txt", nestres = FALSE, collist =
     dplyr::mutate(type3.next_record_serial_number = dplyr::lead(type3.record_serial_number, 1)) -> type3
 
   # Get airport ICAO
-  type3 %>% inner_join(
-                        type3 %>% select(type3.adep_iata) %>%
-                                  unique() %>%
-                                  rowwise() %>%
-                                  mutate(type3.adep_icao = get_airport_icao(type3.adep_iata)), by = c("type3.adep_iata")
-  ) %>% inner_join(
-                      type3 %>% select(type3.ades_iata) %>%
-                        unique() %>%
-                        rowwise() %>%
-                        mutate(type3.ades_icao = get_airport_icao(type3.ades_iata)), by = c("type3.ades_iata")
+  type3 %>% dplyr::inner_join(
+                        type3 %>% dplyr::select(type3.adep_iata) %>%
+                          base::unique() %>%
+                          dplyr::rowwise() %>%
+                          dplyr::mutate(type3.adep_icao = get_airport_icao(type3.adep_iata)), by = c("type3.adep_iata")
+  ) %>% dplyr::inner_join(
+                      type3 %>% dplyr::select(type3.ades_iata) %>%
+                        base::unique() %>%
+                        dplyr::rowwise() %>%
+                        dplyr::mutate(type3.ades_icao = get_airport_icao(type3.ades_iata)), by = c("type3.ades_iata")
   ) -> type3
 
 
-  if (punpivot)
+  if (unpivot_days_of_op)
   { # unpivot type3.days_of_operation
     type3 %>% dplyr::group_by_all() %>%
       tidyr::expand(day_of_operation = seq(1:7)) %>%
@@ -243,7 +251,7 @@ load_ssim <- function(ssim_file = "AUA_20201022.txt", nestres = FALSE, collist =
 
 
   # Expand to flights
-  if (pexpand)
+  if (expand_sched)
   {
     ssimjoin %>%  dplyr::group_by_all() %>%
       tidyr::expand(n_flight = seq(1:(diff_days+1))) %>%
@@ -264,11 +272,11 @@ load_ssim <- function(ssim_file = "AUA_20201022.txt", nestres = FALSE, collist =
 
 
 
-  if (nestres) # use nested dataframes for type 3
+  if (nested_df) # use nested dataframes for type 3
   {
     ssimjoin %>%
       tidyr::nest(type3=all_of(collist[stringr::str_detect(collist,"type3.") | stringr::str_detect(collist,"flight.flight_date")])) -> ssimjoin2
-    if (pexpand)
+    if (expand_sched)
     {
       for (i in 1:nrow(ssimjoin2)){
         ssimjoin2[i,]$type3[[1]] <- ssimjoin2[i,]$type3[[1]] %>% tidyr::nest(flights=dplyr::all_of(collist[stringr::str_detect(collist,"flight.flight_date")]))
@@ -277,10 +285,10 @@ load_ssim <- function(ssim_file = "AUA_20201022.txt", nestres = FALSE, collist =
     ssimjoin <- ssimjoin2
   }
 
-  if (cleannames)
+  if (clean_col_names)
   {
     ssimjoin %>% dplyr::select_all(list(~stringr::str_replace(.,"(type2.)|(type3.)|(type4.)",""))) -> ssimjoin
-    if (nestres)
+    if (nested_df)
     {
       for (i in 1:nrow(ssimjoin)) {
         ssimjoin[i,]$type3[[1]] <- ssimjoin[i,]$type3[[1]] %>% dplyr::select_all(list(~stringr::str_replace(.,"(type2.)|(type3.)|(type4.)","")))
@@ -301,20 +309,20 @@ load_ssim <- function(ssim_file = "AUA_20201022.txt", nestres = FALSE, collist =
 #'
 #' @param ssim_files  List of SSIM files to load, in the correct order (from the first to load to the last file to load).
 #' @param collist  List of columns that need to be present in the final Data Frame. get_ssim_collist() to get the full list.
-#' @param cleannames  Clean column names in the final Data Frame by removing type2/type3 prefixes (TRUE/FALSE). Default TRUE.
+#' @param clean_col_names  Clean column names in the final Data Frame by removing type2/type3 prefixes (TRUE/FALSE). Default TRUE.
 #'
 #' @return Data Frame containing the flights
 #' @export
 #'
 #' @examples
 #' # Display the total traffic per day from two SSIM files
-#' load_ssim(c("./AFR_20201115.txt", "./AFR_20201116.txt"), cleannames = FALSE) %>%
+#' load_ssim(c("./AFR_20201115.txt", "./AFR_20201116.txt"), clean_col_names = FALSE) %>%
 #' group_by(flight_date = as.Date(flight.flight_date)) %>%
 #' summarise(total_flights = n()) %>%
 #' arrange(desc(flight_date))
 load_ssim_flights <- function(ssim_files = c("AFR_20201115.txt","AFR_20201116.txt"),
                               collist = get_ssim_collist(getall = FALSE),
-                              cleannames=TRUE
+                              clean_col_names=TRUE
 )
 {
   priotity <- length(ssim_files)
@@ -322,11 +330,11 @@ load_ssim_flights <- function(ssim_files = c("AFR_20201115.txt","AFR_20201116.tx
   for (ssim in ssim_files)
   {
     all_flights <- base::rbind(all_flights,
-                         load_ssim(ssim, nestres = FALSE,
+                         load_ssim(ssim, nested_df = FALSE,
                                    collist = get_ssim_collist(getall = TRUE),
-                                   cleannames = FALSE,
-                                   punpivot = FALSE,
-                                   pexpand = TRUE) %>% dplyr::mutate(file_priority = priotity, flight_day = as.Date(flight.flight_date))
+                                   clean_col_names = FALSE,
+                                   unpivot_days_of_op = FALSE,
+                                   expand_sched = TRUE) %>% dplyr::mutate(file_priority = priotity, flight_day = as.Date(flight.flight_date))
     )
 
     priotity <- priotity - 1
@@ -344,7 +352,7 @@ load_ssim_flights <- function(ssim_files = c("AFR_20201115.txt","AFR_20201116.tx
   all_flights %>% dplyr::select(-file_priority) %>%
     dplyr::select(collist) -> all_flights
 
-  if (cleannames)
+  if (clean_col_names)
   {
     all_flights %>% dplyr::select_all(list(~stringr::str_replace(.,"(type2.)|(type3.)|(type4.)",""))) -> all_flights
   }
