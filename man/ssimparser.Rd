@@ -3,21 +3,21 @@
 \docType{package}
 \name{ssimparser}
 \alias{ssimparser}
-\title{ssimparser: A Tool For Parsing SSIM Schedules.}
+\title{ssimparser: A Tool For Parsing IATA SSIM Schedules (Chapter 7).}
 \description{
-This package parses SSIM Schedules (type 2 and 3) into a Data Frame.
+This package parses SSIM file (types 2 and 3) into a Data Frame.
  Bugs report:\cr
  \url{https://github.com/sthonnard/ssimparser}
 }
 \section{ssimparser functions}{
 
 \strong{get_ssim_collist()}\cr
-Get the list of columns that can be parsed from SSIM Schedules\cr
+Get the list of columns that can be parsed from SSIM\cr
 
 \strong{load_ssim(ssim_file)}\cr
 Parse SSIM file into a Data Frame.\cr
 
 \strong{load_ssim_files(ssim_file)}\cr
-Parse multiple SSIM files, convert to flights,  and resturn the result into a Data Frame.\cr
+Parse multiple SSIM files, convert to flights, and return the result into a Data Frame.\cr
 }
 

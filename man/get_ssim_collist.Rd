@@ -13,7 +13,7 @@ get_ssim_collist(getall = TRUE)
 Vector containing the columns
 }
 \description{
-Get the list of columns that can be parsed from SSIM Schedules
+Get the list of columns that can be parsed from SSIM
 }
 \examples{
 # Get all columns

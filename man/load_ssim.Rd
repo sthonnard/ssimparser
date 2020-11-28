@@ -5,26 +5,26 @@
 \title{load_ssim}
 \usage{
 load_ssim(
-  ssim_file = "AUA_S_20201022_20201023_20201122.txt",
-  nestres = FALSE,
+  ssim_file = get_ssim_sample(),
+  nested_df = FALSE,
   collist = get_ssim_collist(getall = FALSE),
-  cleannames = TRUE,
-  punpivot = TRUE,
-  pexpand = FALSE
+  clean_col_names = TRUE,
+  unpivot_days_of_op = FALSE,
+  expand_sched = FALSE
 )
 }
 \arguments{
-\item{ssim_file}{Path to the SSIM file.}
+\item{ssim_file}{Path to the SSIM file or string containing the content to load.}
 
-\item{nestres}{Nest SSIM type 3 into type 2 (TRUE/FALSE). Default to FALSE.}
+\item{nested_df}{Nest SSIM type 3 into type 2 (TRUE/FALSE). Default to FALSE.}
 
 \item{collist}{List of columns that need to be present in the final Data Frame. get_ssim_collist() to get the full list.}
 
-\item{cleannames}{Clean column names in the final Data Frame by removing type2/type3 prefixes (TRUE/FALSE). Default TRUE.}
+\item{clean_col_names}{Clean column names in the final Data Frame by removing type2/type3 prefixes (TRUE/FALSE). Default TRUE.}
 
-\item{punpivot}{Unpivot the schedules by creating a schedule by day of operation (TRUE/FALSE). Default FALSE.}
+\item{unpivot_days_of_op}{Unpivot the schedules by creating a schedule by day of operation (TRUE/FALSE). Default FALSE.}
 
-\item{pexpand}{Instantiate flights from the schedules.}
+\item{expand_sched}{Instantiate flights from the schedules.}
 }
 \value{
 Data Frame (nested or not) containing the schedules (or instantiated flights).
@@ -35,4 +35,10 @@ Load SSIM file into a Data Frame.
 \examples{
 # Load SSIM file
 ssim <- load_ssim("./AFR_20201115.txt")
+
+# Expand schedules to flights and display the traffic by month and departure airport ICAO
+library(dplyr)
+ssimparser::load_ssim(ssim_file = get_ssim_sample(), expand_sched = TRUE) \%>\%
+ group_by(format(flight.flight_date,"\%Y-\%m"), adep_icao) \%>\%
+ summarise(n=n())
 }

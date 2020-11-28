@@ -7,7 +7,7 @@
 load_ssim_flights(
   ssim_files = c("AFR_20201115.txt", "AFR_20201116.txt"),
   collist = get_ssim_collist(getall = FALSE),
-  cleannames = TRUE
+  clean_col_names = TRUE
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ load_ssim_flights(
 
 \item{collist}{List of columns that need to be present in the final Data Frame. get_ssim_collist() to get the full list.}
 
-\item{cleannames}{Clean column names in the final Data Frame by removing type2/type3 prefixes (TRUE/FALSE). Default TRUE.}
+\item{clean_col_names}{Clean column names in the final Data Frame by removing type2/type3 prefixes (TRUE/FALSE). Default TRUE.}
 }
 \value{
 Data Frame containing the flights
@@ -27,8 +27,8 @@ so beware of the file order in
 parameter ssim_files.
 }
 \examples{
-# Display the total traffic per day from two SSIM schedules files
-load_ssim(c("./AFR_20201115.txt", "./AFR_20201116.txt"), cleannames = FALSE) \%>\%
+# Display the total traffic per day from two SSIM files
+load_ssim(c("./AFR_20201115.txt", "./AFR_20201116.txt"), clean_col_names = FALSE) \%>\%
 group_by(flight_date = as.Date(flight.flight_date)) \%>\%
 summarise(total_flights = n()) \%>\%
 arrange(desc(flight_date))

@@ -92,7 +92,7 @@ get_ssim_collist <- function(getall=TRUE)
 #' # Load SSIM file
 #' ssim <- load_ssim("./AFR_20201115.txt")
 #'
-#' Expand schedules to flights and display the traffic by month
+#' # Expand schedules to flights and display the traffic by month and departure airport ICAO
 #' library(dplyr)
 #' ssimparser::load_ssim(ssim_file = get_ssim_sample(), expand_sched = TRUE) %>%
 #'  group_by(format(flight.flight_date,"%Y-%m"), adep_icao) %>%
