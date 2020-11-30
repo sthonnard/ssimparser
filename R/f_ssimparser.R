@@ -74,18 +74,15 @@ get_ssim_sample <- function(datefrom = as.Date("2020-11-01"), dateto = as.Date("
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-3XAF 43310101J",ssimdatefrom,ssimdateto,"12345672CDG18451845+0100T1ALC20252020+01001F320XX                  XX   XX        XX XX    XXX      XX XX XX XX 1234   2L W                     X20D52X99XA320      00000003
+3XAF 43310101J",ssimdatefrom,ssimdateto,"12345672CDG18451845+0100T1ALC20252020+01001F320XX                  XX   XX        XX XX    XXX      XX XX XX XX 1234   2L W                                         00000003
 4XAF 43310101J              XX020CDGALCAF TEST                                                                                                                                                    000004
 4XAF 43310101J              XX021CDGALCAF TEST                                                                                                                                                    000005
 4XAF 43310101J              XX026CDGALCAF TEST                                                                                                                                                    000006
-3XAF 43310101J",ssimdatefrom,stringr::str_to_upper(format(min(dateto, datefrom + 21), "%d%b%y")),"     672CDG07000700+0100T1ALC08300830+01001F320XX                  XX   XX        XX XX    XXX      XX XX XX XX 1234   2L W                     X20D52X99XA320      00000007
-3XAF 12340101J",ssimdatefrom,stringr::str_to_upper(format(min(dateto, datefrom + 15), "%d%b%y")),"     672CDG18451945+0100T1ALC21252120+01001F320XX                  XX   XX        XX XX    XXX      XX XX XX XX 1234   2L W                     X20D52X99XA320      00000008
+3XAF 43310101J",ssimdatefrom,stringr::str_to_upper(format(min(dateto, datefrom + 21), "%d%b%y")),"     672CDG07000700+0100T1ALC08300830+01001F320XX                  XX   XX        XX XX    XXX      XX XX XX XX 1234   2L W                                         00000007
+3XAF 12340101J",ssimdatefrom,stringr::str_to_upper(format(min(dateto, datefrom + 15), "%d%b%y")),"     672CDG18451945+0100T1ALC21252120+01001F320XX                  XX   XX        XX XX    XXX      XX XX XX XX 1234   2L W                                         00000008
 ")
 
   Sys.setlocale("LC_TIME", lct)
   return(ssim_sample)
 }
-
-
-
 

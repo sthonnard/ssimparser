@@ -34,7 +34,8 @@ Load SSIM file into a Data Frame.
 }
 \examples{
 # Load SSIM file
-ssim <- load_ssim("./AFR_20201115.txt")
+# ssim <- load_ssim("./AFR_20201115.txt")
+ssim <- function(ssim_file = get_ssim_sample())
 
 # Expand schedules to flights and display the traffic by month and departure airport ICAO
 library(dplyr)
