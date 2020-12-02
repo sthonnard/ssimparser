@@ -140,3 +140,14 @@ library(dplyr)
 1 2020-11 LFPG         42
 2 2020-12 LFPG          1
 ```
+
+Expand the schedules to flights and display a line graph showing the traffic per day:
+
+```{r}
+library(dplyr)
+library(ggplot2)
+ssimparser::load_ssim(ssim_file = get_ssim_sample(), expand_sched = TRUE) %>%
+  group_by(flight_day = as.Date(format(flight.flight_date,"%Y-%m-%d"))) %>%
+  summarise(flights = n()) %>%
+  ggplot(aes(flight_day, flights)) + geom_line()
+```
