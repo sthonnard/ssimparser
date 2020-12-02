@@ -129,7 +129,7 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
 
 
   ssimdf %>%
-    filter(lin != "character(0)") %>%
+    dplyr::filter(lin != "character(0)") %>%
     dplyr::filter(stringr::str_sub(as.character(lin), 1, 1) == "2") %>%
     dplyr::mutate(
       type2.timemode = stringr::str_sub(lin, 2, 2),
@@ -240,7 +240,7 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
   }
 
   # Add type 2 serial number when missing, as it is for last record
-  type2$type2.next_record_serial_number <- ifelse(is.na( type2$type2.next_record_serial_number),max(type3$type3.record_serial_number)+1, type2$type2.next_record_serial_number)
+  type2$type2.next_record_serial_number <- ifelse(is.na( type2$type2.next_record_serial_number), max(type3$type3.record_serial_number) + 1, type2$type2.next_record_serial_number)
 
   # get n type3 for each type2
   type2 %>% dplyr::mutate(n_type3 = base::nrow(type3[which(type3$type3.record_serial_number > type2.record_serial_number &
@@ -251,7 +251,7 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
   type3 %>% dplyr::rowwise() %>% dplyr::mutate(type3.type2_record_serial_number = base::max(type2[which(as.numeric(type2$type2.record_serial_number)<as.numeric(type3.record_serial_number)),]$type2.record_serial_number)) -> type3
 
   # Join type2 with type3 and nest the type3
-  type2 %>% dplyr::left_join(type3, by=c("type2.record_serial_number"="type3.type2_record_serial_number")) -> ssimjoin
+  type2 %>% dplyr::left_join(type3, by=c("type2.record_serial_number" = "type3.type2_record_serial_number")) -> ssimjoin
 
 
   # Convert from local to utc
@@ -260,7 +260,7 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
            type3.sta_utc = get_utc_time(type3.period_from, type3.sta, type3.ades_utc_offset)
     )  %>%
     dplyr::mutate(diff_days =  (as.double(get_utc_time(type3.period_to) - get_utc_time(type3.period_from)))  ) %>%
-    dplyr::mutate(sta_utc = dplyr::if_else(type3.sta_utc <= type3.std_utc, type3.sta_utc+(24*60*60), type3.sta_utc),
+    dplyr::mutate(sta_utc = dplyr::if_else(type3.sta_utc <= type3.std_utc, type3.sta_utc + (24*60*60), type3.sta_utc),
            type3.period_from_utc = as.Date(type3.std_utc),
            type3.period_to_utc = as.Date(type3.std_utc) + diff_days
     ) -> ssimjoin
@@ -270,9 +270,9 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
   if (expand_sched)
   {
     ssimjoin %>%  dplyr::group_by_all() %>%
-      tidyr::expand(n_flight = seq(1:(diff_days+1))) %>%
+      tidyr::expand(n_flight = seq(1:(diff_days + 1))) %>%
       dplyr::filter(diff_days > 0 | (diff_days == 0 & n_flight == 1) ) %>%
-      dplyr::mutate(flight.flight_date = type3.std_utc + (n_flight-1)*24*60*60 ) %>%
+      dplyr::mutate(flight.flight_date = type3.std_utc + (n_flight - 1)*24*60*60 ) %>%
       dplyr::rowwise() %>%
       dplyr::mutate(day_of_operation = as.character(get_day_of_week(as.Date(flight.flight_date)))) %>%
       dplyr::filter(stringr::str_detect(type3.days_of_operation, day_of_operation ) > 0) %>%
@@ -291,11 +291,11 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
   if (nested_df) # use nested dataframes for type 3
   {
     ssimjoin %>%
-      tidyr::nest(type3=all_of(collist[stringr::str_detect(collist,"type3.") | stringr::str_detect(collist,"flight.flight_date")])) -> ssimjoin2
+      tidyr::nest(type3 = all_of(collist[stringr::str_detect(collist,"type3.") | stringr::str_detect(collist,"flight.flight_date")])) -> ssimjoin2
     if (expand_sched)
     {
-      for (i in 1:nrow(ssimjoin2)){
-        ssimjoin2[i,]$type3[[1]] <- ssimjoin2[i,]$type3[[1]] %>% tidyr::nest(flights=dplyr::all_of(collist[stringr::str_detect(collist,"flight.flight_date")]))
+      for (i in 1:nrow(ssimjoin2)) {
+        ssimjoin2[i,]$type3[[1]] <- ssimjoin2[i,]$type3[[1]] %>% tidyr::nest(flights = dplyr::all_of(collist[stringr::str_detect(collist,"flight.flight_date")]))
       }
     }
     ssimjoin <- ssimjoin2
@@ -361,7 +361,7 @@ load_ssim_flights <- function(ssim_files = c("AFR_20201115.txt","AFR_20201116.tx
     dplyr::summarise(choosen = min(file_priority))  -> choosen_flights
 
   all_flights %>%
-    dplyr::inner_join(choosen_flights, by =  c("flight_day"="flight_day", "file_priority"="choosen")) -> all_flights
+    dplyr::inner_join(choosen_flights, by =  c("flight_day" = "flight_day", "file_priority" = "choosen")) -> all_flights
 
   # Filter selected columns
   collist[collist %in% colnames(all_flights)] -> collist
