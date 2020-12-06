@@ -31,7 +31,7 @@ To install the latest version from github:
 
 ``` {.R}
 library(devtools)
-install_github("sthonnard/tzupdater")
+install_github("sthonnard/ssimparser")
 
 library(ssimparser)
 ```
