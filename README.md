@@ -4,7 +4,7 @@ A tool for parsing IATA SSIM Schedules (Chapter 7) into a Data Frame.
 
 *Note: currently limited to types 2 and 3.*
 
-**Example of SSIM file**
+## Example of SSIM file
 
 ``` {style="width: 1600px;"}
 1AIRLINE STANDARD SCHEDULE DATA SET     1                                                                                                                                                      000000001
@@ -25,7 +25,7 @@ A tool for parsing IATA SSIM Schedules (Chapter 7) into a Data Frame.
 3XAF 12340101J01NOV2016NOV20     672CDG18451945+0100T1ALC21252120+01001F320XX                  XX   XX        XX XX    XXX      XX XX XX XX 1234   2L W                                         00000008
 ```
 
-**Installation**
+## Installation
 
 To install the latest version from github:
 
@@ -36,7 +36,7 @@ install_github("sthonnard/ssimparser")
 library(ssimparser)
 ```
 
-**Examples**
+## Examples
 
 Display a sample SSIM file:
 
@@ -61,7 +61,7 @@ print(ssim_df)
 3 C               AF           1234          J            01NOV20     16NOV20   67                CDG       ALC       320                L            2020-11-01 18:45:00 2020-11-01 20:25:00 LFPG      LEAL     
 ```
 
-Load any file from the disk:
+Load any file from the filesystem:
 
 ``` {.R}
 ssim_df <- ssimparser::load_ssim(ssim_file = "/tmp/ssim.txt")
@@ -141,6 +141,28 @@ library(dplyr)
 2 2020-12 LFPG          1
 ```
 
+Expand schedules to flights for multiple SSIM files:
+
+``` {.R}
+library(dplyr)
+ssimparser::load_ssim_flights(ssim_files = c(get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01")),
+                                             get_ssim_sample(datefrom = as.Date("2020-11-15"), dateto = as.Date("2020-12-01")),
+                                             get_ssim_sample(datefrom = as.Date("2020-11-10"), dateto = as.Date("2020-12-20"))
+                                             )) %>%
+  group_by(month = format(flight.flight_date,"%Y-%m"), adep_icao) %>%
+  summarise(n = n())
+```
+
+``` {style="width: 1700px;"}
+# A tibble: 2 x 3
+# Groups:   month [2]
+  month   adep_icao     n
+  <chr>   <chr>     <int>
+1 2020-11 LFPG         46
+2 2020-12 LFPG         20
+```
+
+
 Expand the schedules to flights and display a line graph showing the traffic per day:
 
 ```{r}
@@ -150,4 +172,41 @@ ssimparser::load_ssim(ssim_file = get_ssim_sample(), expand_sched = TRUE) %>%
   group_by(flight_day = as.Date(format(flight.flight_date,"%Y-%m-%d"))) %>%
   summarise(flights = n()) %>%
   ggplot(aes(flight_day, flights)) + geom_line()
+```
+
+
+Display a map of the connections between airports:
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(airportr)
+
+ssimparser::load_ssim(ssim_file = get_ssim_sample(), expand_sched = TRUE) %>%
+  mutate(ap1 = min(adep_iata, ades_iata),
+         ap2 = max(adep_iata, ades_iata)) %>%
+  group_by(ap1, ap2) %>%
+  summarise(flights = n()) %>%
+  mutate(ap1_det = airportr::airport_detail(ap1),
+         ap2_det = airportr::airport_detail(ap2),
+         citypair = paste0(ap1, "-", ap2)) -> flights 
+
+citypair_plot <- rbind(data.frame(citypair = flights$citypair, x = flights$ap1_det$Longitude, y = flights$ap1_det$Latitude, size = flights$flights, name = flights$ap1_det$ICAO),
+                       data.frame(citypair = flights$citypair, x = flights$ap2_det$Longitude, y = flights$ap2_det$Latitude, size = flights$flights, name = flights$ap2_det$ICAO))
+                  
+worldmap <- rnaturalearth::ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf')
+map <- sf::st_crop(worldmap, xmin = min(citypair_plot$x) - 10,
+                   xmax = max(citypair_plot$x) + 10,
+                   ymin = min(citypair_plot$y)  - 5,
+                   ymax = max(citypair_plot$y) + 5)
+
+ggplot2::ggplot() + 
+  ggplot2::geom_sf(data = map, color = "#8c8c5a", fill = "#d7d7c1") +
+  geom_line(aes(x=citypair_plot$x, y=citypair_plot$y, group=citypair_plot$citypair), linetype = 1, size = 1, alpha = 0.5 ) +
+  geom_point(aes(x=citypair_plot$x, y=citypair_plot$y), size = 2) +
+  geom_label(aes(x=citypair_plot$x, y=citypair_plot$y, label = citypair_plot$name)) +
+  ggplot2::theme_bw() +
+  ggplot2::labs(title = "Flights") +
+  ggplot2::xlab("Longitude") +
+  ggplot2::ylab("Latitude")
 ```

@@ -5,7 +5,7 @@
 \alias{ssimparser}
 \title{ssimparser: A Tool For Parsing IATA SSIM Schedules (Chapter 7).}
 \description{
-This package parses SSIM file (types 2 and 3) into a Data Frame.
+Parse SSIM file (types 2 and 3) into a Data Frame.
  Bugs report:\cr
  \url{https://github.com/sthonnard/ssimparser}
 }
@@ -19,5 +19,8 @@ Parse SSIM file into a Data Frame.\cr
 
 \strong{load_ssim_files(ssim_file)}\cr
 Parse multiple SSIM files, convert to flights, and return the result into a Data Frame.\cr
+
+\strong{get_ssim_sample()}\cr
+Get a sample SSIM file as a string.\cr
 }
 

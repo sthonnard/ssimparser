@@ -1,6 +1,6 @@
 #' ssimparser: A Tool For Parsing IATA SSIM Schedules (Chapter 7).
 #'
-#' This package parses SSIM file (types 2 and 3) into a Data Frame.
+#' Parse SSIM file (types 2 and 3) into a Data Frame.
 #'  Bugs report:\cr
 #'  \url{https://github.com/sthonnard/ssimparser}
 #'
@@ -15,11 +15,15 @@
 #' \strong{load_ssim_files(ssim_file)}\cr
 #' Parse multiple SSIM files, convert to flights, and return the result into a Data Frame.\cr
 #'
+#' \strong{get_ssim_sample()}\cr
+#' Get a sample SSIM file as a string.\cr
+#'
 #' @docType package
 #' @name ssimparser
 #'
 #'
 
+source("./R/utils-pipe.R")
 source("./R/f_ssimparser.R")
 
 #' get_ssim_collist
@@ -107,24 +111,24 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
   ssimdf <- data.frame()
 
   if (stringr::str_detect(ssim_file, "\n"))
-  { # Load SSIM provided as characters
+  {# Load SSIM provided as characters
     ssim <- stringr::str_split(ssim_file,"\n")[[1]]
-  }else{ # Load a file
+  }else{# Load a file
     con <- base::file(ssim_file, "r")
     ssim <- base::strsplit(base::readLines(con),"\n")
   }
 
   print(paste("File to load has",length(ssim),"rows"))
-  if (length(ssim) == 0){stop(paste(ssim_file, "is empty!"))}
+  if (length(ssim) == 0) {stop(paste(ssim_file, "is empty!"))}
   ssimdf <- as.data.frame(matrix(ssim, ncol = 1, byrow = TRUE))
   colnames(ssimdf) <- "lin"
-  if (!(stringr::str_sub(ssimdf$lin[1],1,35) == "1AIRLINE STANDARD SCHEDULE DATA SET")){
+  if (!(stringr::str_sub(ssimdf$lin[1], 1, 35) == "1AIRLINE STANDARD SCHEDULE DATA SET")) {
     stop(paste(ssim_file,"is not a valid file airline standard schedule data set!"))
   }
 
-  print(paste("dataframe has",nrow(ssimdf),"rows"))
+  print(paste("data frame has",nrow(ssimdf),"rows"))
   rm(ssim)
-  if (exists("con")){close(con)
+  if (exists("con")) {close(con)
     rm(con)}
 
 
@@ -251,7 +255,7 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
   type3 %>% dplyr::rowwise() %>% dplyr::mutate(type3.type2_record_serial_number = base::max(type2[which(as.numeric(type2$type2.record_serial_number)<as.numeric(type3.record_serial_number)),]$type2.record_serial_number)) -> type3
 
   # Join type2 with type3 and nest the type3
-  type2 %>% dplyr::left_join(type3, by=c("type2.record_serial_number" = "type3.type2_record_serial_number")) -> ssimjoin
+  type2 %>% dplyr::left_join(type3, by = c("type2.record_serial_number" = "type3.type2_record_serial_number")) -> ssimjoin
 
 
   # Convert from local to utc
@@ -288,7 +292,7 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
 
 
 
-  if (nested_df) # use nested dataframes for type 3
+  if (nested_df) # use nested data frame for type 3
   {
     ssimjoin %>%
       tidyr::nest(type3 = all_of(collist[stringr::str_detect(collist,"type3.") | stringr::str_detect(collist,"flight.flight_date")])) -> ssimjoin2
@@ -350,7 +354,8 @@ load_ssim_flights <- function(ssim_files = c("AFR_20201115.txt","AFR_20201116.tx
                                    collist = get_ssim_collist(getall = TRUE),
                                    clean_col_names = FALSE,
                                    unpivot_days_of_op = FALSE,
-                                   expand_sched = TRUE) %>% dplyr::mutate(file_priority = priotity, flight_day = as.Date(flight.flight_date))
+                                   expand_sched = TRUE) %>%
+                           dplyr::mutate(file_priority = priotity, flight_day = as.Date(flight.flight_date))
     )
 
     priotity <- priotity - 1
@@ -374,3 +379,48 @@ load_ssim_flights <- function(ssim_files = c("AFR_20201115.txt","AFR_20201116.tx
   }
   return(all_flights)
 }
+
+
+#' get_ssim_sample
+#'
+#' Get a test SSIM file for validation
+#' @param datefrom  First date of the sample.
+#' @param dateto  Last date of the sample.
+#' @param season  IATA season (W20 = Winter 2020).
+#'
+#' @return SSIM sample as a string.
+#' @export
+#'
+#' @examples
+#' # Get SSIM sample
+#' get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season="W20")
+get_ssim_sample <- function(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season="W20")
+{
+  lct <- Sys.getlocale("LC_TIME")
+  Sys.setlocale("LC_TIME", "C")
+  creadate <- stringr::str_to_upper(format(Sys.Date(), "%d%b%y"))
+  ssimdatefrom <- stringr::str_to_upper(format(datefrom, "%d%b%y"))
+  ssimdateto <- stringr::str_to_upper(format(dateto, "%d%b%y"))
+
+  ssim_sample <- paste0("1AIRLINE STANDARD SCHEDULE DATA SET     1                                                                                                                                                      000000001
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+2LAF      W20 ",ssimdatefrom,ssimdateto,creadate, "SSIM EXAMPLE SCHEDULE        ",creadate,"CKENNY                               TEST AIRLINE                                                 1/8/13/18          ET1800000002
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+3XAF 43310101J",ssimdatefrom,ssimdateto,"12345672CDG18451845+0100T1ALC20252020+01001F320XX                  XX   XX        XX XX    XXX      XX XX XX XX 1234   2L W                                         00000003
+4XAF 43310101J              XX020CDGALCAF TEST                                                                                                                                                    000004
+4XAF 43310101J              XX021CDGALCAF TEST                                                                                                                                                    000005
+4XAF 43310101J              XX026CDGALCAF TEST                                                                                                                                                    000006
+3XAF 43310101J",ssimdatefrom,stringr::str_to_upper(format(min(dateto, datefrom + 21), "%d%b%y")),"     672CDG07000700+0100T1ALC08300830+01001F320XX                  XX   XX        XX XX    XXX      XX XX XX XX 1234   2L W                                         00000007
+3XAF 12340101J",ssimdatefrom,stringr::str_to_upper(format(min(dateto, datefrom + 15), "%d%b%y")),"     672CDG18451945+0100T1ALC21252120+01001F320XX                  XX   XX        XX XX    XXX      XX XX XX XX 1234   2L W                                         00000008
+")
+
+  Sys.setlocale("LC_TIME", lct)
+  return(ssim_sample)
+}
+
