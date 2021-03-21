@@ -6,7 +6,7 @@ Author: Sebastien Thonnard
 Maintainer: Sebastien Thonnard <sebastien.thonnard@icloud.com>
 Description: Parse SSIM file (types 2 and 3) into a Data Frame.
     Can also expand schedules into flights.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.0

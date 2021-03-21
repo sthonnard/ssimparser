@@ -29,7 +29,7 @@ parameter ssim_files.
 \examples{
 # Display the total traffic per day from two SSIM files
 # load_ssim(c("./AFR_20201115.txt", "./AFR_20201116.txt"), clean_col_names = FALSE) \%>\%
-# group_by(flight_date = as.Date(flight.flight_date)) \%>\%
-# summarise(total_flights = n()) \%>\%
-# arrange(desc(flight_date))
+# dplyr::group_by(flight_date = as.Date(flight.flight_date)) \%>\%
+# dplyr::summarise(total_flights = n()) \%>\%
+# dplyr::arrange(desc(flight_date))
 }
