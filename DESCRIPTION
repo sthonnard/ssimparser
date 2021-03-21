@@ -1,10 +1,10 @@
 Package: ssimparser
 Type: Package
-Title: A Tool For Parsing IATA SSIM Schedules Chapter 7
+Title: A Tool For Parsing Standard Schedules Information
 Version: 0.1.0
 Author: Sebastien Thonnard
 Maintainer: Sebastien Thonnard <sebastien.thonnard@icloud.com>
-Description: Parse SSIM file (types 2 and 3) into a Data Frame.
+Description: Parse Standard Schedules Information file (types 2 and 3) into a Data Frame.
     Can also expand schedules into flights.
 License: MIT + file LICENSE
 Encoding: UTF-8
