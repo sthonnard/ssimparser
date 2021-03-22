@@ -7,8 +7,8 @@ testthat::test_that("ALC is LEAL", {
 
 testthat::test_that("Expand two months",
 {
-   flights <- load_ssim_flights(c(ssimparser::get_ssim_sample(as.Date("2020-11-01"), as.Date("2020-11-30")),
-                      ssimparser::get_ssim_sample(as.Date("2020-12-01"), as.Date("2020-12-31")))) %>%
+   flights <- load_ssim_flights(c(ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-11-30"), season = "W20", creadate = as.Date("2020-12-02")),
+                      ssimparser::get_ssim_sample(datefrom = as.Date("2020-12-01"), dateto = as.Date("2020-12-31"), season = "W20", creadate = as.Date("2020-12-02")))) %>%
                       dplyr::group_by(flight_date = as.Date(flight.flight_date)) %>%
                       dplyr::summarise(total_flights = dplyr::n()) %>%
                       dplyr::arrange(desc(flight_date))
@@ -18,19 +18,19 @@ testthat::test_that("Expand two months",
 
 testthat::test_that("Check all columns",
                     {
-                      schedules <- ssimparser::load_ssim(ssimparser::get_ssim_sample(), collist = ssimparser::get_ssim_collist(getall = TRUE)[1:58], nested_df = FALSE)
+                      schedules <- ssimparser::load_ssim(ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season = "W20", creadate = as.Date("2020-12-02") ), collist = ssimparser::get_ssim_collist(getall = TRUE)[1:58], nested_df = FALSE)
                       testthat::expect_known_value(data.frame(schedules), "schedules")
                     })
 
 testthat::test_that("Check all columns nested",
                     {
-                      schedules <- ssimparser::load_ssim(ssimparser::get_ssim_sample(), collist = ssimparser::get_ssim_collist(getall = TRUE)[1:58], nested_df = TRUE)
+                      schedules <- ssimparser::load_ssim(ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season = "W20", creadate = as.Date("2020-12-02")), collist = ssimparser::get_ssim_collist(getall = TRUE)[1:58], nested_df = TRUE)
                       testthat::expect_known_value(data.frame(schedules), "schedules_nested")
                     })
 
 testthat::test_that("Check unpivot",
                     {
-                      schedules <- ssimparser::load_ssim(ssimparser::get_ssim_sample(), collist = ssimparser::get_ssim_collist(getall = TRUE)[1:58], nested_df = FALSE,
+                      schedules <- ssimparser::load_ssim(ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season = "W20", creadate = as.Date("2020-12-02")), collist = ssimparser::get_ssim_collist(getall = TRUE)[1:58], nested_df = FALSE,
                                                          unpivot_days_of_op = TRUE)
                       testthat::expect_known_value(data.frame(schedules), "unpivot")
                     })
@@ -41,11 +41,13 @@ testthat::test_that("Is aligned with python ssim package", {
   lct <- Sys.getlocale("LC_TIME")
   Sys.setlocale("LC_TIME", "C")
 
-  ssim_sample <- ssimparser::get_ssim_sample()
+  ssim_sample <- ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season = "W20", creadate = as.Date("2020-12-02"))
   # Write sample ssim file to temp dir
   write(ssim_sample,paste0(tempdir(),"/","ssim.txt"), append = FALSE)
 
   # Open the SSIM file with python package ssim
+  reticulate::py_install("pandas")
+  reticulate::py_install("ssim", pip = TRUE)
   reticulate::py_run_string(paste0("
 import ssim
 import pandas as pd

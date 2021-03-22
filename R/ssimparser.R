@@ -412,6 +412,7 @@ load_ssim_flights <- function(ssim_files = c("AFR_20201115.txt","AFR_20201116.tx
 #' @param datefrom  First date of the sample.
 #' @param dateto  Last date of the sample.
 #' @param season  IATA season (W20 = Winter 2020).
+#' @param creadate Creation date. Default today.
 #'
 #' @return SSIM sample as a string.
 #' @export
@@ -419,11 +420,11 @@ load_ssim_flights <- function(ssim_files = c("AFR_20201115.txt","AFR_20201116.tx
 #' @examples
 #' # Get SSIM sample
 #' get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season="W20")
-get_ssim_sample <- function(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season="W20")
+get_ssim_sample <- function(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season="W20", creadate = Sys.Date())
 {
   lct <- Sys.getlocale("LC_TIME")
   Sys.setlocale("LC_TIME", "C")
-  creadate <- stringr::str_to_upper(format(Sys.Date(), "%d%b%y"))
+  creadate <- stringr::str_to_upper(format(creadate, "%d%b%y"))
   ssimdatefrom <- stringr::str_to_upper(format(datefrom, "%d%b%y"))
   ssimdateto <- stringr::str_to_upper(format(dateto, "%d%b%y"))
 

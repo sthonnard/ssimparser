@@ -7,7 +7,8 @@
 get_ssim_sample(
   datefrom = as.Date("2020-11-01"),
   dateto = as.Date("2020-12-01"),
-  season = "W20"
+  season = "W20",
+  creadate = Sys.Date()
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ get_ssim_sample(
 \item{dateto}{Last date of the sample.}
 
 \item{season}{IATA season (W20 = Winter 2020).}
+
+\item{creadate}{Date of creation. Default today.}
 }
 \value{
 SSIM sample as a string.
