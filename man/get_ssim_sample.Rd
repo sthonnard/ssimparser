@@ -18,7 +18,7 @@ get_ssim_sample(
 
 \item{season}{IATA season (W20 = Winter 2020).}
 
-\item{creadate}{Date of creation. Default today.}
+\item{creadate}{Creation date. Default today.}
 }
 \value{
 SSIM sample as a string.
