@@ -1,4 +1,4 @@
-#' ssimparser: A Tool For Parsing Standard Schedules Information (Chapter 7).
+#' ssimparser: A Tool for Parsing Standard Schedules Information (Chapter 7).
 #'
 #' Parse SSIM file (types 2 and 3) into a Data Frame.
 #'  Bugs report:\cr
