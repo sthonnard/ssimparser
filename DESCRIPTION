@@ -8,12 +8,6 @@ Description: Parse Standard Schedules Information file (types 2 and 3) into a Da
     Can also expand schedules into flights.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 RoxygenNote: 7.1.0
 Imports: tidyr, dplyr, stringr, airportr, magrittr
-Config/reticulate:
-  list(
-    packages = list(
-      list(package = "ssim", pip = TRUE)
-    )
-  )
