@@ -3,7 +3,7 @@
 \docType{package}
 \name{ssimparser}
 \alias{ssimparser}
-\title{ssimparser: A Tool For Parsing Standard Schedules Information (Chapter 7).}
+\title{ssimparser: A Tool for Parsing Standard Schedules Information (Chapter 7).}
 \description{
 Parse SSIM file (types 2 and 3) into a Data Frame.
  Bugs report:\cr
