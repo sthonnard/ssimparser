@@ -1,6 +1,6 @@
 Package: ssimparser
 Type: Package
-Title: A Tool For Parsing Standard Schedules Information
+Title: Standard Schedules Information Parser
 Version: 0.1.0
 Author: Sebastien Thonnard
 Maintainer: Sebastien Thonnard <sebastien.thonnard@icloud.com>
