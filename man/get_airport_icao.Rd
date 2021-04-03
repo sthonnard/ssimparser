@@ -10,7 +10,7 @@ get_airport_icao(iata)
 \item{iata}{Airport IATA code.}
 }
 \value{
-A character vector containing the airport ICAO or '-' when airportr::airport_detail returned error.
+A character vector containing the airport ICAO or '-' when \code{\link[airportr:airport_detail]{airportr::airport_detail}} returned an error.
 }
 \description{
 Get airport ICAO with package airportr.

@@ -7,9 +7,9 @@
 get_utc_time(pdate = "27NOV20", ptime = "0000", poffset = "+0000")
 }
 \arguments{
-\item{pdate}{Local date formatted as %d%b%y (eg 27NOV20).}
+\item{pdate}{Local date formatted as \%d\%b\%y" (eg 27NOV20).}
 
-\item{ptime}{Local time formatted %H%M (eg 1345 for 13:45).}
+\item{ptime}{Local time formatted \%H\%M (eg 1345 for 13:45).}
 
 \item{poffset}{UTC offset (+0130 for +01:30).}
 }

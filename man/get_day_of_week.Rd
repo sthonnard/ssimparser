@@ -7,7 +7,7 @@
 get_day_of_week(pdate = Sys.Date())
 }
 \arguments{
-\item{pdate}{An object of class "POSIXct" from which day of week will be extracted}
+\item{pdate}{An object of class "POSIXct" from which day of week will be extracted.}
 }
 \value{
 A double representing the day of week.

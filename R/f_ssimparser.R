@@ -1,8 +1,8 @@
 #' get_utc_time
 #'
 #' Get UTC date and time from SSIM local date time and offset.
-#' @param pdate  Local date formatted as %d%b%y (eg 27NOV20).
-#' @param ptime  Local time formatted %H%M (eg 1345 for 13:45).
+#' @param pdate  Local date formatted as \%d\%b\%y" (eg 27NOV20).
+#' @param ptime  Local time formatted \%H\%M (eg 1345 for 13:45).
 #' @param poffset  UTC offset (+0130 for +01:30).
 #'
 #' @return A "POSIXct" or the description of a conversion problem as a character vector.
@@ -44,7 +44,7 @@ get_utc_time <- function(pdate = "27NOV20", ptime = "0000", poffset = "+0000")
 #' get_day_of_week
 #'
 #' Get day of week (1 = Monday).
-#' @param pdate  An object of class "POSIXct" from which day of week will be extracted
+#' @param pdate  An object of class "POSIXct" from which day of week will be extracted.
 #'
 #' @return A double representing the day of week.
 #' @keywords internal
@@ -73,7 +73,7 @@ get_day_of_week <- function(pdate = Sys.Date())
 #' Get airport ICAO with package airportr.
 #' @param iata  Airport IATA code.
 #'
-#' @return A character vector containing the airport ICAO or '-' when airportr::airport_detail returned error.
+#' @return A character vector containing the airport ICAO or '-' when \code{\link[airportr:airport_detail]{airportr::airport_detail}} returned an error.
 #' @keywords internal
 #'
 #' @examples

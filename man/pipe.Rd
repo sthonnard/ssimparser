@@ -6,6 +6,9 @@
 \usage{
 lhs \%>\% rhs
 }
+\value{
+For numeric arguments, a numeric vector. For factors, an unordered factor. See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
+}
 \description{
 See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
 }
