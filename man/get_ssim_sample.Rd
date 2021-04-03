@@ -28,7 +28,10 @@ Get a test SSIM file for validation and testing.
 }
 \examples{
 # Get sample
-sample_ssim_str <- ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season="W20")
+sample_ssim_str <- ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"),
+dateto = as.Date("2020-12-01"),
+season="W20")
+
 # Parse the sample into a data frame
 ssim_sample_df <- ssimparser::load_ssim(ssim_file = sample_ssim_str)
 head(ssim_sample_df, 10)

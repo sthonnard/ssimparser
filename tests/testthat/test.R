@@ -5,6 +5,30 @@ testthat::test_that("ALC is LEAL", {
   testthat::expect_equal((ssimparser::load_ssim() %>% dplyr::filter(ades_iata == "ALC") %>% dplyr::select(ades_icao) %>% base::unique())[[1]], "LEAL")
 })
 
+testthat::test_that("Reading multiple files is working",
+{
+  # Get 3 samples as a character vector
+  samples <- data.frame(sampleid = c(1:3)) %>%
+  rowwise() %>%
+  mutate(filename = tempfile(),
+  samplestring = ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01") + (sampleid * 3), dateto = as.Date("2020-12-01") + (sampleid * 3), season = "W20", creadate = as.Date("2020-11-01") + sampleid)
+  )
+  # Write the samples to tempdir
+  for (i in 1:3)
+  {
+    write(samples[i,]$samplestring, samples[i,]$filename, append = FALSE)
+  }
+  # Load the 3 samples and expand to flights
+  flights <- ssimparser::load_ssim_flights(ssim_files = samples$filename)
+  testthat::expect_known_value(data.frame(flights), "flights_from_filesystem")
+  rm(flights)
+  # Unlink temp files
+  for (i in 1:3)
+  {
+    unlink(samples[i,]$filename)
+  }
+})
+
 testthat::test_that("Expand two months",
 {
    flights <- load_ssim_flights(c(ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-11-30"), season = "W20", creadate = as.Date("2020-12-02")),

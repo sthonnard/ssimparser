@@ -29,9 +29,13 @@ parameter ssim_files.
 \examples{
 # Get 3 samples as a character vector
 samples <- data.frame(sampleid = c(1:3)) \%>\%
- rowwise() \%>\%
- mutate(filename = tempfile(),
-        samplestring = ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01") + (sampleid * 3), dateto = as.Date("2020-12-01") + (sampleid * 3), season = "W20", creadate = as.Date("2020-11-01") + sampleid)
+ dplyr::rowwise() \%>\%
+ dplyr::mutate(
+ filename = tempfile(),
+ samplestring = ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01") + (sampleid * 3),
+ dateto = as.Date("2020-12-01") + (sampleid * 3),
+ season = "W20",
+ creadate = as.Date("2020-11-01") + sampleid)
  )
 # Write the samples to tempdir
 for (i in 1:3)
@@ -42,7 +46,7 @@ for (i in 1:3)
 # Load the 3 samples and display the total traffic per day
 ssimparser::load_ssim_flights(ssim_files = samples$filename) \%>\%
 dplyr::group_by(flight_date = as.Date(flight.flight_date)) \%>\%
-dplyr::summarise(total_flights = n()) \%>\%
+dplyr::summarise(total_flights = dplyr::n()) \%>\%
 dplyr::arrange(desc(flight_date))
 
 # Unlink temp files

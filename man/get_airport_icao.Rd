@@ -16,7 +16,9 @@ A character vector containing the airport ICAO or '-' when \code{\link[airportr:
 Get airport ICAO with package airportr.
 }
 \examples{
-get_airport_icao("CDG")
+\dontrun{
+ssimparser::get_airport_icao("CDG")
 # LFPG
+}
 }
 \keyword{internal}

@@ -34,21 +34,29 @@ Load SSIM file into a Data Frame.
 }
 \examples{
 # Get a sample as a character vector
-sample_ssim_string <- ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season = "W20", creadate = as.Date("2020-12-02"))
+sample_ssim_string <- ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"),
+dateto = as.Date("2020-12-01"),
+season = "W20",
+creadate = as.Date("2020-12-02"))
+
 # Write sample to temp dir
 sample_ssim_file <- tempfile()
 write(sample_ssim_string, sample_ssim_file, append = FALSE)
 
-# Load sample, expand schedules to flights and display the traffic by month and departure airport ICAO
-ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = TRUE) \%>\%
+# Load sample, expand schedules to flights and display the traffic
+# by month and departure airport ICAO
+ssimparser::load_ssim(ssim_file = sample_ssim_file,
+expand_sched = TRUE) \%>\%
 dplyr::group_by(format(flight.flight_date,"\%Y-\%m"), adep_icao) \%>\%
-dplyr::summarise(n=n())
+dplyr::summarise(n=dplyr::n())
 
 # Get the unique list of airports ICAO
-ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = TRUE, collist = c("type3.adep_icao", "type3.ades_icao")) \%>\% unique()
+ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = TRUE,
+collist = c("type3.adep_icao", "type3.ades_icao")) \%>\% unique()
 
 # Nest the type 3 into type 2
-ssim_nested <- ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = FALSE, nested = TRUE)
+ssim_nested <- ssimparser::load_ssim(ssim_file = sample_ssim_file,
+expand_sched = FALSE, nested = TRUE)
 head(ssim_nested)
 
 # Remove the sample SSIM file

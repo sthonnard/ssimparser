@@ -20,7 +20,9 @@ A "POSIXct" or the description of a conversion problem as a character vector.
 Get UTC date and time from SSIM local date time and offset.
 }
 \examples{
-get_utc_time(pdate = "27NOV20", ptime = "0000", poffset = "+0000")
+\dontrun{
+ssimparser::get_utc_time(pdate = "27NOV20", ptime = "0000", poffset = "+0000")
 # 2020-11-27 UTC
+}
 }
 \keyword{internal}

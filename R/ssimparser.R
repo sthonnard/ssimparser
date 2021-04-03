@@ -94,21 +94,29 @@ get_ssim_collist <- function(getall=TRUE)
 #'
 #' @examples
 #' # Get a sample as a character vector
-#' sample_ssim_string <- ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season = "W20", creadate = as.Date("2020-12-02"))
+#' sample_ssim_string <- ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"),
+#' dateto = as.Date("2020-12-01"),
+#' season = "W20",
+#' creadate = as.Date("2020-12-02"))
+#'
 #' # Write sample to temp dir
 #' sample_ssim_file <- tempfile()
 #' write(sample_ssim_string, sample_ssim_file, append = FALSE)
 #'
-#' # Load sample, expand schedules to flights and display the traffic by month and departure airport ICAO
-#' ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = TRUE) %>%
+#' # Load sample, expand schedules to flights and display the traffic
+#' # by month and departure airport ICAO
+#' ssimparser::load_ssim(ssim_file = sample_ssim_file,
+#' expand_sched = TRUE) %>%
 #' dplyr::group_by(format(flight.flight_date,"%Y-%m"), adep_icao) %>%
-#' dplyr::summarise(n=n())
+#' dplyr::summarise(n=dplyr::n())
 #'
 #' # Get the unique list of airports ICAO
-#' ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = TRUE, collist = c("type3.adep_icao", "type3.ades_icao")) %>% unique()
+#' ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = TRUE,
+#' collist = c("type3.adep_icao", "type3.ades_icao")) %>% unique()
 #'
 #' # Nest the type 3 into type 2
-#' ssim_nested <- ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = FALSE, nested = TRUE)
+#' ssim_nested <- ssimparser::load_ssim(ssim_file = sample_ssim_file,
+#' expand_sched = FALSE, nested = TRUE)
 #' head(ssim_nested)
 #'
 #' # Remove the sample SSIM file
@@ -368,9 +376,13 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
 #' @examples
 #' # Get 3 samples as a character vector
 #' samples <- data.frame(sampleid = c(1:3)) %>%
-#'  rowwise() %>%
-#'  mutate(filename = tempfile(),
-#'         samplestring = ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01") + (sampleid * 3), dateto = as.Date("2020-12-01") + (sampleid * 3), season = "W20", creadate = as.Date("2020-11-01") + sampleid)
+#'  dplyr::rowwise() %>%
+#'  dplyr::mutate(
+#'  filename = tempfile(),
+#'  samplestring = ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01") + (sampleid * 3),
+#'  dateto = as.Date("2020-12-01") + (sampleid * 3),
+#'  season = "W20",
+#'  creadate = as.Date("2020-11-01") + sampleid)
 #'  )
 #' # Write the samples to tempdir
 #' for (i in 1:3)
@@ -381,7 +393,7 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
 #' # Load the 3 samples and display the total traffic per day
 #' ssimparser::load_ssim_flights(ssim_files = samples$filename) %>%
 #' dplyr::group_by(flight_date = as.Date(flight.flight_date)) %>%
-#' dplyr::summarise(total_flights = n()) %>%
+#' dplyr::summarise(total_flights = dplyr::n()) %>%
 #' dplyr::arrange(desc(flight_date))
 #'
 #' # Unlink temp files
@@ -449,7 +461,10 @@ load_ssim_flights <- function(ssim_files = c("AFR_20201115.txt","AFR_20201116.tx
 #'
 #' @examples
 #' # Get sample
-#' sample_ssim_str <- ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season="W20")
+#' sample_ssim_str <- ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"),
+#' dateto = as.Date("2020-12-01"),
+#' season="W20")
+#'
 #' # Parse the sample into a data frame
 #' ssim_sample_df <- ssimparser::load_ssim(ssim_file = sample_ssim_str)
 #' head(ssim_sample_df, 10)
