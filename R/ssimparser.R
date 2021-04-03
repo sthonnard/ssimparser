@@ -104,6 +104,13 @@ get_ssim_collist <- function(getall=TRUE)
 #' dplyr::group_by(format(flight.flight_date,"%Y-%m"), adep_icao) %>%
 #' dplyr::summarise(n=n())
 #'
+#' # Get the unique list of airports ICAO
+#' ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = TRUE, collist = c("type3.adep_icao", "type3.ades_icao")) %>% unique()
+#'
+#' # Nest the type 3 into type 2
+#' ssim_nested <- ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = FALSE, nested = TRUE)
+#' head(ssim_nested)
+#'
 #' # Remove the sample SSIM file
 #' unlink(sample_ssim_file)
 load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist = get_ssim_collist(getall = FALSE),
