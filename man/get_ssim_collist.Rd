@@ -10,7 +10,7 @@ get_ssim_collist(getall = TRUE)
 \item{getall}{Get all columns (TRUE/FALSE).}
 }
 \value{
-Vector containing the SSIM columns
+Vector containing the SSIM columns.
 }
 \description{
 Get the list of columns that can be parsed from SSIM.

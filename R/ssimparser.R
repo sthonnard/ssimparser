@@ -31,7 +31,7 @@ source("./R/f_ssimparser.R")
 #' Get the list of columns that can be parsed from SSIM.
 #' @param getall  Get all columns (TRUE/FALSE).
 #'
-#' @return Vector containing the SSIM columns
+#' @return Vector containing the SSIM columns.
 #' @export
 #'
 #' @examples
