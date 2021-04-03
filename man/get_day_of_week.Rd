@@ -2,11 +2,21 @@
 % Please edit documentation in R/f_ssimparser.R
 \name{get_day_of_week}
 \alias{get_day_of_week}
-\title{Get day of week (1=Monday)}
+\title{get_day_of_week}
 \usage{
 get_day_of_week(pdate = Sys.Date())
 }
+\arguments{
+\item{pdate}{An object of class "POSIXct" from which day of week will be extracted}
+}
+\value{
+A double representing the day of week.
+}
 \description{
-Get day of week (1=Monday)
+Get day of week (1 = Monday).
+}
+\examples{
+get_day_of_week(as.Date("2021-04-03"))
+# 6
 }
 \keyword{internal}

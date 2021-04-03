@@ -2,11 +2,25 @@
 % Please edit documentation in R/f_ssimparser.R
 \name{get_utc_time}
 \alias{get_utc_time}
-\title{get UTC date and time from SSIM local date time and offset}
+\title{get_utc_time}
 \usage{
 get_utc_time(pdate = "27NOV20", ptime = "0000", poffset = "+0000")
 }
+\arguments{
+\item{pdate}{Local date formatted as %d%b%y (eg 27NOV20).}
+
+\item{ptime}{Local time formatted %H%M (eg 1345 for 13:45).}
+
+\item{poffset}{UTC offset (+0130 for +01:30).}
+}
+\value{
+A "POSIXct" or the description of a conversion problem as a character vector.
+}
 \description{
-get UTC date and time from SSIM local date time and offset
+Get UTC date and time from SSIM local date time and offset.
+}
+\examples{
+get_utc_time(pdate = "27NOV20", ptime = "0000", poffset = "+0000")
+# 2020-11-27 UTC
 }
 \keyword{internal}

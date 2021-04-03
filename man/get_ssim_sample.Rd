@@ -21,12 +21,15 @@ get_ssim_sample(
 \item{creadate}{Creation date. Default today.}
 }
 \value{
-SSIM sample as a string.
+A character vector containing the SSIM sample.
 }
 \description{
-Get a test SSIM file for validation
+Get a test SSIM file for validation and testing.
 }
 \examples{
-# Get SSIM sample
-get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season="W20")
+# Get sample
+sample_ssim_str <- ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season="W20")
+# Parse the sample into a data frame
+ssim_sample_df <- ssimparser::load_ssim(ssim_file = sample_ssim_str)
+head(ssim_sample_df, 10)
 }

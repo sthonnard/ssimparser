@@ -1,22 +1,22 @@
 #' ssimparser: A Tool for Parsing Standard Schedules Information (Chapter 7).
 #'
-#' Parse SSIM file (types 2 and 3) into a Data Frame.
+#' Parse SSIM file (types 2 and 3) into a Data Frame.\cr\cr
 #'  Bugs report:\cr
 #'  \url{https://github.com/sthonnard/ssimparser}
 #'
 #'
 #' @section ssimparser functions:
 #' \strong{get_ssim_collist()}\cr
-#' Get the list of columns that can be parsed from SSIM\cr
+#' Get the list of columns that can be parsed from SSIM.\cr
 #'
 #' \strong{load_ssim(ssim_file)}\cr
 #' Parse SSIM file into a Data Frame.\cr
 #'
-#' \strong{load_ssim_files(ssim_file)}\cr
-#' Parse multiple SSIM files, convert to flights, and return the result into a Data Frame.\cr
+#' \strong{load_ssim_flights(ssim_files)}\cr
+#' Parse multiple SSIM files, expand to flights, and return the result into a Data Frame.\cr
 #'
 #' \strong{get_ssim_sample()}\cr
-#' Get a sample SSIM file as a string.\cr
+#' Get a sample SSIM file as a character vector.\cr
 #'
 #' @docType package
 #' @name ssimparser
@@ -28,10 +28,10 @@ source("./R/f_ssimparser.R")
 
 #' get_ssim_collist
 #'
-#' Get the list of columns that can be parsed from SSIM
+#' Get the list of columns that can be parsed from SSIM.
 #' @param getall  Get all columns (TRUE/FALSE).
 #'
-#' @return Vector containing the columns
+#' @return Vector containing the SSIM columns
 #' @export
 #'
 #' @examples
@@ -82,25 +82,30 @@ get_ssim_collist <- function(getall=TRUE)
 #' load_ssim
 #'
 #' Load SSIM file into a Data Frame.
-#' @param ssim_file  Path to the SSIM file or string containing the content to load.
+#' @param ssim_file  Path to the SSIM file or character vector containing the content to load.
 #' @param nested_df  Nest SSIM type 3 into type 2 (TRUE/FALSE). Default to FALSE.
 #' @param collist  List of columns that need to be present in the final Data Frame. get_ssim_collist() to get the full list.
 #' @param clean_col_names  Clean column names in the final Data Frame by removing type2/type3 prefixes (TRUE/FALSE). Default TRUE.
 #' @param unpivot_days_of_op  Unpivot the schedules by creating a schedule by day of operation (TRUE/FALSE). Default FALSE.
-#' @param expand_sched  Instantiate flights from the schedules.
+#' @param expand_sched  Expand schedules into flights.
 #'
-#' @return Data Frame (nested or not) containing the schedules (or instantiated flights).
+#' @return Data Frame (nested or not) containing the schedules (or flights when schedules were expanded).
 #' @export
 #'
 #' @examples
-#' # Load SSIM file
-#' # ssim <- load_ssim("./AFR_20201115.txt")
-#' ssim <- function(ssim_file = get_ssim_sample())
+#' # Get a sample as a character vector
+#' sample_ssim_string <- ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season = "W20", creadate = as.Date("2020-12-02"))
+#' # Write sample to temp dir
+#' sample_ssim_file <- tempfile()
+#' write(sample_ssim_string, sample_ssim_file, append = FALSE)
 #'
-#' # Expand schedules to flights and display the traffic by month and departure airport ICAO
-#' ssimparser::load_ssim(ssim_file = get_ssim_sample(), expand_sched = TRUE) %>%
-#'  dplyr::group_by(format(flight.flight_date,"%Y-%m"), adep_icao) %>%
-#'  dplyr::summarise(n=n())
+#' # Load sample, expand schedules to flights and display the traffic by month and departure airport ICAO
+#' ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = TRUE) %>%
+#' dplyr::group_by(format(flight.flight_date,"%Y-%m"), adep_icao) %>%
+#' dplyr::summarise(n=n())
+#'
+#' # Remove the sample SSIM file
+#' unlink(sample_ssim_file)
 load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist = get_ssim_collist(getall = FALSE),
                       clean_col_names=TRUE,
                       unpivot_days_of_op = FALSE,
@@ -341,7 +346,7 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
 
 #' load_ssim_flights
 #'
-#' Load multiple SSIM file, instantiate flights, and return the result as a Data Frame. \cr
+#' Load multiple SSIM file, expand to flights, and return the result as a Data Frame. \cr
 #' In case of period overlap for a specific flight date, information from the latest file will be used, \cr
 #' so beware of the file order in
 #' parameter ssim_files.
@@ -354,11 +359,29 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
 #' @export
 #'
 #' @examples
-#' # Display the total traffic per day from two SSIM files
-#' # load_ssim(c("./AFR_20201115.txt", "./AFR_20201116.txt"), clean_col_names = FALSE) %>%
-#' # dplyr::group_by(flight_date = as.Date(flight.flight_date)) %>%
-#' # dplyr::summarise(total_flights = n()) %>%
-#' # dplyr::arrange(desc(flight_date))
+#' # Get 3 samples as a character vector
+#' samples <- data.frame(sampleid = c(1:3)) %>%
+#'  rowwise() %>%
+#'  mutate(filename = tempfile(),
+#'         samplestring = ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01") + (sampleid * 3), dateto = as.Date("2020-12-01") + (sampleid * 3), season = "W20", creadate = as.Date("2020-11-01") + sampleid)
+#'  )
+#' # Write the samples to tempdir
+#' for (i in 1:3)
+#' {
+#'  write(samples[i,]$samplestring, samples[i,]$filename, append = FALSE)
+#' }
+#'
+#' # Load the 3 samples and display the total traffic per day
+#' ssimparser::load_ssim_flights(ssim_files = samples$filename) %>%
+#' dplyr::group_by(flight_date = as.Date(flight.flight_date)) %>%
+#' dplyr::summarise(total_flights = n()) %>%
+#' dplyr::arrange(desc(flight_date))
+#'
+#' # Unlink temp files
+#' for (i in 1:3)
+#' {
+#'   unlink(samples[i,]$filename)
+#' }
 load_ssim_flights <- function(ssim_files = c("AFR_20201115.txt","AFR_20201116.txt"),
                               collist = get_ssim_collist(getall = FALSE),
                               clean_col_names=TRUE
@@ -408,18 +431,21 @@ load_ssim_flights <- function(ssim_files = c("AFR_20201115.txt","AFR_20201116.tx
 
 #' get_ssim_sample
 #'
-#' Get a test SSIM file for validation
+#' Get a test SSIM file for validation and testing.
 #' @param datefrom  First date of the sample.
 #' @param dateto  Last date of the sample.
 #' @param season  IATA season (W20 = Winter 2020).
 #' @param creadate Creation date. Default today.
 #'
-#' @return SSIM sample as a string.
+#' @return A character vector containing the SSIM sample.
 #' @export
 #'
 #' @examples
-#' # Get SSIM sample
-#' get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season="W20")
+#' # Get sample
+#' sample_ssim_str <- ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season="W20")
+#' # Parse the sample into a data frame
+#' ssim_sample_df <- ssimparser::load_ssim(ssim_file = sample_ssim_str)
+#' head(ssim_sample_df, 10)
 get_ssim_sample <- function(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season="W20", creadate = Sys.Date())
 {
   lct <- Sys.getlocale("LC_TIME")

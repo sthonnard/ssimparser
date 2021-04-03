@@ -1,5 +1,16 @@
-#' get UTC date and time from SSIM local date time and offset
+#' get_utc_time
+#'
+#' Get UTC date and time from SSIM local date time and offset.
+#' @param pdate  Local date formatted as %d%b%y (eg 27NOV20).
+#' @param ptime  Local time formatted %H%M (eg 1345 for 13:45).
+#' @param poffset  UTC offset (+0130 for +01:30).
+#'
+#' @return A "POSIXct" or the description of a conversion problem as a character vector.
 #' @keywords internal
+#'
+#' @examples
+#' get_utc_time(pdate = "27NOV20", ptime = "0000", poffset = "+0000")
+#' # 2020-11-27 UTC
 get_utc_time <- function(pdate = "27NOV20", ptime = "0000", poffset = "+0000")
 {
 
@@ -30,8 +41,17 @@ get_utc_time <- function(pdate = "27NOV20", ptime = "0000", poffset = "+0000")
 
 }
 
-#' Get day of week (1=Monday)
+#' get_day_of_week
+#'
+#' Get day of week (1 = Monday).
+#' @param pdate  An object of class "POSIXct" from which day of week will be extracted
+#'
+#' @return A double representing the day of week.
 #' @keywords internal
+#'
+#' @examples
+#' get_day_of_week(as.Date("2021-04-03"))
+#' # 6
 get_day_of_week <- function(pdate = Sys.Date())
 {
   lct <- Sys.getlocale("LC_TIME")
@@ -48,8 +68,17 @@ get_day_of_week <- function(pdate = Sys.Date())
   ))
 }
 
-#' Get airport ICAO with airportr
+#' get_airport_icao
+#'
+#' Get airport ICAO with package airportr.
+#' @param iata  Airport IATA code.
+#'
+#' @return A character vector containing the airport ICAO or '-' when airportr::airport_detail returned error.
 #' @keywords internal
+#'
+#' @examples
+#' get_airport_icao("CDG")
+#' # LFPG
 get_airport_icao <- function(iata)
 {
   tryCatch({

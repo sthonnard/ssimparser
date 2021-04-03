@@ -2,11 +2,21 @@
 % Please edit documentation in R/f_ssimparser.R
 \name{get_airport_icao}
 \alias{get_airport_icao}
-\title{Get airport ICAO with airportr}
+\title{get_airport_icao}
 \usage{
 get_airport_icao(iata)
 }
+\arguments{
+\item{iata}{Airport IATA code.}
+}
+\value{
+A character vector containing the airport ICAO or '-' when airportr::airport_detail returned error.
+}
 \description{
-Get airport ICAO with airportr
+Get airport ICAO with package airportr.
+}
+\examples{
+get_airport_icao("CDG")
+# LFPG
 }
 \keyword{internal}

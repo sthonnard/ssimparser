@@ -14,7 +14,7 @@ load_ssim(
 )
 }
 \arguments{
-\item{ssim_file}{Path to the SSIM file or string containing the content to load.}
+\item{ssim_file}{Path to the SSIM file or character vector containing the content to load.}
 
 \item{nested_df}{Nest SSIM type 3 into type 2 (TRUE/FALSE). Default to FALSE.}
 
@@ -24,21 +24,26 @@ load_ssim(
 
 \item{unpivot_days_of_op}{Unpivot the schedules by creating a schedule by day of operation (TRUE/FALSE). Default FALSE.}
 
-\item{expand_sched}{Instantiate flights from the schedules.}
+\item{expand_sched}{Expand schedules into flights.}
 }
 \value{
-Data Frame (nested or not) containing the schedules (or instantiated flights).
+Data Frame (nested or not) containing the schedules (or flights when schedules were expanded).
 }
 \description{
 Load SSIM file into a Data Frame.
 }
 \examples{
-# Load SSIM file
-# ssim <- load_ssim("./AFR_20201115.txt")
-ssim <- function(ssim_file = get_ssim_sample())
+# Get a sample as a character vector
+sample_ssim_string <- ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01"), season = "W20", creadate = as.Date("2020-12-02"))
+# Write sample to temp dir
+sample_ssim_file <- tempfile()
+write(sample_ssim_string, sample_ssim_file, append = FALSE)
 
-# Expand schedules to flights and display the traffic by month and departure airport ICAO
-ssimparser::load_ssim(ssim_file = get_ssim_sample(), expand_sched = TRUE) \%>\%
- dplyr::group_by(format(flight.flight_date,"\%Y-\%m"), adep_icao) \%>\%
- dplyr::summarise(n=n())
+# Load sample, expand schedules to flights and display the traffic by month and departure airport ICAO
+ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = TRUE) \%>\%
+dplyr::group_by(format(flight.flight_date,"\%Y-\%m"), adep_icao) \%>\%
+dplyr::summarise(n=n())
+
+# Remove the sample SSIM file
+unlink(sample_ssim_file)
 }
