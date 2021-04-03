@@ -1,6 +1,6 @@
 # ssimparser
 
-A tool for parsing IATA SSIM Schedules (Chapter 7) into a Data Frame.
+Parse IATA SSIM Schedules (Chapter 7) into a Data Frame.
 
 *Note: currently limited to types 2 and 3.*
 
@@ -162,7 +162,6 @@ ssimparser::load_ssim_flights(ssim_files = c(get_ssim_sample(datefrom = as.Date(
 2 2020-12 LFPG         20
 ```
 
-
 Expand the schedules to flights and display a line graph showing the traffic per day:
 
 ```{r}
@@ -173,7 +172,6 @@ ssimparser::load_ssim(ssim_file = get_ssim_sample(), expand_sched = TRUE) %>%
   summarise(flights = n()) %>%
   ggplot(aes(flight_day, flights)) + geom_line()
 ```
-
 
 Display a map of the connections between airports:
 
