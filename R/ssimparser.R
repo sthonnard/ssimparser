@@ -370,7 +370,7 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
 #' @param collist  List of columns that need to be present in the final Data Frame. get_ssim_collist() to get the full list.
 #' @param clean_col_names  Clean column names in the final Data Frame by removing type2/type3 prefixes (TRUE/FALSE). Default TRUE.
 #'
-#' @return Data Frame containing the flights
+#' @return Data Frame containing the flights.
 #' @export
 #'
 #' @examples
