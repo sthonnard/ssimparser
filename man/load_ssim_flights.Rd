@@ -18,7 +18,7 @@ load_ssim_flights(
 \item{clean_col_names}{Clean column names in the final Data Frame by removing type2/type3 prefixes (TRUE/FALSE). Default TRUE.}
 }
 \value{
-Data Frame containing the flights
+Data Frame containing the flights.
 }
 \description{
 Load multiple SSIM file, expand to flights, and return the result as a Data Frame. \cr
