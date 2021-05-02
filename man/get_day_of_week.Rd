@@ -15,10 +15,4 @@ A double representing the day of week.
 \description{
 Get day of week (1 = Monday).
 }
-\examples{
-\dontrun{
-ssimparser::get_day_of_week(as.Date("2021-04-03"))
-# 6
-}
-}
 \keyword{internal}

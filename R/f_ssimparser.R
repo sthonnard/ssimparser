@@ -7,12 +7,6 @@
 #'
 #' @return A "POSIXct" or the description of a conversion problem as a character vector.
 #' @keywords internal
-#'
-#' @examples
-#' \dontrun{
-#' ssimparser::get_utc_time(pdate = "27NOV20", ptime = "0000", poffset = "+0000")
-#' # 2020-11-27 UTC
-#'}
 get_utc_time <- function(pdate = "27NOV20", ptime = "0000", poffset = "+0000")
 {
 
@@ -50,12 +44,6 @@ get_utc_time <- function(pdate = "27NOV20", ptime = "0000", poffset = "+0000")
 #'
 #' @return A double representing the day of week.
 #' @keywords internal
-#'
-#' @examples
-#'\dontrun{
-#' ssimparser::get_day_of_week(as.Date("2021-04-03"))
-#' # 6
-#'}
 get_day_of_week <- function(pdate = Sys.Date())
 {
   lct <- Sys.getlocale("LC_TIME")
@@ -79,12 +67,6 @@ get_day_of_week <- function(pdate = Sys.Date())
 #'
 #' @return A character vector containing the airport ICAO or '-' when \code{\link[airportr:airport_detail]{airportr::airport_detail}} returned an error.
 #' @keywords internal
-#'
-#' @examples
-#' \dontrun{
-#' ssimparser::get_airport_icao("CDG")
-#' # LFPG
-#'}
 get_airport_icao <- function(iata)
 {
   tryCatch({
