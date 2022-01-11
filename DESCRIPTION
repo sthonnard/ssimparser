@@ -1,7 +1,7 @@
 Package: ssimparser
 Type: Package
 Title: Standard Schedules Information Parser
-Version: 0.1.0
+Version: 0.1.1
 Author: Sebastien Thonnard
 Maintainer: Sebastien Thonnard <sebastien.thonnard@icloud.com>
 Description: Parse Standard Schedules Information file (types 2 and 3) into a Data Frame.
@@ -9,5 +9,5 @@ Description: Parse Standard Schedules Information file (types 2 and 3) into a Da
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: false
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.2
 Imports: tidyr, dplyr, stringr, airportr, magrittr

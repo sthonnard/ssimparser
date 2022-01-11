@@ -273,7 +273,8 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
   if (unpivot_days_of_op)
   { # unpivot type3.days_of_operation
     type3 %>% dplyr::group_by_all() %>%
-      tidyr::expand(day_of_operation = seq(1:7)) %>%
+      dplyr::summarise(day_of_operation = seq(1:7)) %>%
+      dplyr::ungroup() %>%
       dplyr::rowwise() %>%
       dplyr::mutate(day_of_operation = as.character(day_of_operation)) %>%
       dplyr::filter(stringr::str_detect(type3.days_of_operation, day_of_operation ) > 0) %>%
@@ -313,7 +314,8 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
   if (expand_sched)
   {
     ssimjoin %>%  dplyr::group_by_all() %>%
-      tidyr::expand(n_flight = seq(1:(diff_days + 1))) %>%
+      dplyr::summarise(n_flight = seq(1:(diff_days + 1))) %>%
+      dplyr::ungroup() %>%
       dplyr::filter(diff_days > 0 | (diff_days == 0 & n_flight == 1) ) %>%
       dplyr::mutate(flight.flight_date = type3.std_utc + (n_flight - 1)*24*60*60 ) %>%
       dplyr::rowwise() %>%
