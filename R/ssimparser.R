@@ -1,29 +1,3 @@
-#' ssimparser: A Tool for Parsing Standard Schedules Information (Chapter 7).
-#'
-#' Parse SSIM file (types 2 and 3) into a Data Frame.\cr\cr
-#'  Bugs report:\cr
-#'  \url{https://github.com/sthonnard/ssimparser}
-#'
-#'
-#' @section ssimparser functions:
-#' \strong{get_ssim_collist()}\cr
-#' Get the list of columns that can be parsed from SSIM.\cr
-#'
-#' \strong{load_ssim(ssim_file)}\cr
-#' Parse SSIM file into a Data Frame.\cr
-#'
-#' \strong{load_ssim_flights(ssim_files)}\cr
-#' Parse multiple SSIM files, expand to flights, and return the result into a Data Frame.\cr
-#'
-#' \strong{get_ssim_sample()}\cr
-#' Get a sample SSIM file as a character vector.\cr
-#'
-#' @docType package
-#' @name ssimparser
-#'
-#'
-
-source("./R/utils-pipe.R")
 source("./R/f_ssimparser.R")
 
 #' get_ssim_collist
@@ -106,13 +80,13 @@ get_ssim_collist <- function(getall=TRUE)
 #' # Load sample, expand schedules to flights and display the traffic
 #' # by month and departure airport ICAO
 #' ssimparser::load_ssim(ssim_file = sample_ssim_file,
-#' expand_sched = TRUE) %>%
-#' dplyr::group_by(format(flight.flight_date,"%Y-%m"), adep_icao) %>%
+#' expand_sched = TRUE) |>
+#' dplyr::group_by(format(flight.flight_date,"%Y-%m"), adep_icao) |>
 #' dplyr::summarise(n=dplyr::n())
 #'
 #' # Get the unique list of airports ICAO
 #' ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = TRUE,
-#' collist = c("type3.adep_icao", "type3.ades_icao")) %>% unique()
+#' collist = c("type3.adep_icao", "type3.ades_icao")) |> unique()
 #'
 #' # Nest the type 3 into type 2
 #' ssim_nested <- ssimparser::load_ssim(ssim_file = sample_ssim_file,
@@ -171,9 +145,9 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
   diff_days <- ""
   flight.flight_date <- ""
 
-  ssimdf %>%
-    dplyr::filter(lin != "character(0)") %>%
-    dplyr::filter(stringr::str_sub(as.character(lin), 1, 1) == "2") %>%
+  ssimdf |>
+    dplyr::filter(lin != "character(0)") |>
+    dplyr::filter(stringr::str_sub(as.character(lin), 1, 1) == "2") |>
     dplyr::mutate(
       type2.timemode = stringr::str_sub(lin, 2, 2),
       type2.iata_airline = stringr::str_trim(stringr::str_sub(lin,3,5)),
@@ -193,11 +167,11 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
       type2.electronic_ticketing_information = stringr::str_sub(lin,189,190),
       type2.creation_time = stringr::str_sub(lin,191,194), #HH24MI
       type2.record_serial_number = as.numeric(stringr::str_sub(lin,195,1200))
-    ) %>% dplyr::select(-lin) %>%
-    dplyr::arrange(type2.record_serial_number) %>%
+    ) |> dplyr::select(-lin) |>
+    dplyr::arrange(type2.record_serial_number) |>
     dplyr::mutate(type2.next_record_serial_number = dplyr::lead(type2.record_serial_number, 1)) -> type2
 
-  ssimdf %>% dplyr::filter(stringr::str_sub(as.character(lin), 1, 1) == "3") %>%
+  ssimdf |> dplyr::filter(stringr::str_sub(as.character(lin), 1, 1) == "3") |>
     dplyr::mutate(
       type3.operational_suffix = stringr::str_trim(stringr::str_sub(lin, 2, 2)),
       type3.airline_designator = stringr::str_trim(stringr::str_sub(lin, 3, 5)), # as in type2.iata_airline
@@ -244,26 +218,26 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
       type3.aircraft_configuration = stringr::str_sub(lin, 173, 192),
       type3.date_variation = stringr::str_sub(lin, 193, 194),
       type3.record_serial_number = as.numeric(stringr::str_sub(lin, 195, 200))
-    ) %>% dplyr::select(-lin) %>%
-    dplyr::arrange(type3.record_serial_number) %>%
+    ) |> dplyr::select(-lin) |>
+    dplyr::arrange(type3.record_serial_number) |>
     dplyr::mutate(type3.next_record_serial_number = dplyr::lead(type3.record_serial_number, 1)) -> type3
 
   # Get airport ICAO if requested
   if ("type3.adep_icao" %in% collist)
   {
-    type3 %>% dplyr::inner_join(
-                          type3 %>% dplyr::select(type3.adep_iata) %>%
-                            base::unique() %>%
-                            dplyr::rowwise() %>%
+    type3 |> dplyr::inner_join(
+                          type3 |> dplyr::select(type3.adep_iata) |>
+                            base::unique() |>
+                            dplyr::rowwise() |>
                             dplyr::mutate(type3.adep_icao = get_airport_icao(type3.adep_iata)), by = c("type3.adep_iata")
     ) -> type3
   }
   if ("type3.ades_icao" %in% collist)
   {
-    type3 %>% dplyr::inner_join(
-      type3 %>% dplyr::select(type3.ades_iata) %>%
-        base::unique() %>%
-        dplyr::rowwise() %>%
+    type3 |> dplyr::inner_join(
+      type3 |> dplyr::select(type3.ades_iata) |>
+        base::unique() |>
+        dplyr::rowwise() |>
         dplyr::mutate(type3.ades_icao = get_airport_icao(type3.ades_iata)), by = c("type3.ades_iata")
     ) -> type3
   }
@@ -272,14 +246,14 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
 
   if (unpivot_days_of_op)
   { # unpivot type3.days_of_operation
-    type3 %>% dplyr::group_by_all() %>%
-      dplyr::summarise(day_of_operation = seq(1:7)) %>%
-      dplyr::ungroup() %>%
-      dplyr::rowwise() %>%
-      dplyr::mutate(day_of_operation = as.character(day_of_operation)) %>%
-      dplyr::filter(stringr::str_detect(type3.days_of_operation, day_of_operation ) > 0) %>%
-      dplyr::mutate(type3.days_of_operation = day_of_operation) %>%
-      dplyr::ungroup() %>%
+    type3 |> dplyr::group_by_all() |>
+      dplyr::reframe(day_of_operation = seq(1:7)) |>
+      dplyr::ungroup() |>
+      dplyr::rowwise() |>
+      dplyr::mutate(day_of_operation = as.character(day_of_operation)) |>
+      dplyr::filter(stringr::str_detect(type3.days_of_operation, day_of_operation ) > 0) |>
+      dplyr::mutate(type3.days_of_operation = day_of_operation) |>
+      dplyr::ungroup() |>
       dplyr::select(-day_of_operation) -> type3
   }
 
@@ -287,23 +261,23 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
   type2$type2.next_record_serial_number <- ifelse(is.na( type2$type2.next_record_serial_number), max(type3$type3.record_serial_number) + 1, type2$type2.next_record_serial_number)
 
   # get n type3 for each type2
-  type2 %>% dplyr::mutate(n_type3 = base::nrow(type3[which(type3$type3.record_serial_number > type2.record_serial_number &
+  type2 |> dplyr::mutate(n_type3 = base::nrow(type3[which(type3$type3.record_serial_number > type2.record_serial_number &
                                                 type3$type3.record_serial_number < type2.next_record_serial_number),])
   ) -> type2
 
   # Find the type 2 rownum for each type 3
-  type3 %>% dplyr::rowwise() %>% dplyr::mutate(type3.type2_record_serial_number = base::max(type2[which(as.numeric(type2$type2.record_serial_number) < as.numeric(type3.record_serial_number)),]$type2.record_serial_number)) -> type3
+  type3 |> dplyr::rowwise() |> dplyr::mutate(type3.type2_record_serial_number = base::max(type2[which(as.numeric(type2$type2.record_serial_number) < as.numeric(type3.record_serial_number)),]$type2.record_serial_number)) -> type3
 
   # Join type2 with type3 and nest the type3
-  type2 %>% dplyr::left_join(type3, by = c("type2.record_serial_number" = "type3.type2_record_serial_number")) -> ssimjoin
+  type2 |> dplyr::left_join(type3, by = c("type2.record_serial_number" = "type3.type2_record_serial_number")) -> ssimjoin
 
 
   # Convert from local to utc
-  ssimjoin %>% dplyr::rowwise() %>%
+  ssimjoin |> dplyr::rowwise() |>
     dplyr::mutate(type3.std_utc = get_utc_time(type3.period_from, type3.std, type3.adep_utc_offset),
            type3.sta_utc = get_utc_time(type3.period_from, type3.sta, type3.ades_utc_offset)
-    )  %>%
-    dplyr::mutate(diff_days =  (as.double(get_utc_time(type3.period_to) - get_utc_time(type3.period_from)))  ) %>%
+    )  |>
+    dplyr::mutate(diff_days =  (as.double(get_utc_time(type3.period_to) - get_utc_time(type3.period_from)))  ) |>
     dplyr::mutate(sta_utc = dplyr::if_else(type3.sta_utc <= type3.std_utc, type3.sta_utc + (24*60*60), type3.sta_utc),
            type3.period_from_utc = as.Date(type3.std_utc),
            type3.period_to_utc = as.Date(type3.std_utc) + diff_days
@@ -313,34 +287,34 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
   # Expand to flights
   if (expand_sched)
   {
-    ssimjoin %>%  dplyr::group_by_all() %>%
-      dplyr::summarise(n_flight = seq(1:(diff_days + 1))) %>%
-      dplyr::ungroup() %>%
-      dplyr::filter(diff_days > 0 | (diff_days == 0 & n_flight == 1) ) %>%
-      dplyr::mutate(flight.flight_date = type3.std_utc + (n_flight - 1)*24*60*60 ) %>%
-      dplyr::rowwise() %>%
-      dplyr::mutate(day_of_operation = as.character(get_day_of_week(as.Date(flight.flight_date)))) %>%
-      dplyr::filter(stringr::str_detect(type3.days_of_operation, day_of_operation ) > 0) %>%
-      dplyr::ungroup() %>%
+    ssimjoin |> dplyr::group_by_all() |>
+      dplyr::reframe(n_flight = seq(1:(diff_days + 1))) |>
+      dplyr::ungroup() |>
+      dplyr::filter(diff_days > 0 | (diff_days == 0 & n_flight == 1) ) |>
+      dplyr::mutate(flight.flight_date = type3.std_utc + (n_flight - 1)*24*60*60 ) |>
+      dplyr::rowwise() |>
+      dplyr::mutate(day_of_operation = as.character(get_day_of_week(as.Date(flight.flight_date)))) |>
+      dplyr::filter(stringr::str_detect(type3.days_of_operation, day_of_operation ) > 0) |>
+      dplyr::ungroup() |>
       dplyr::select(-n_flight, day_of_operation) -> ssimjoin
   }
 
 
   # Filter selected columns
   collist[collist %in% colnames(ssimjoin)] -> collist
-  ssimjoin %>% dplyr::select(-diff_days) %>%
-    dplyr::select(collist) -> ssimjoin
+  ssimjoin |> dplyr::select(-diff_days) |>
+    dplyr::select(dplyr::all_of(collist)) -> ssimjoin
 
 
 
   if (nested_df) # use nested data frame for type 3
   {
-    ssimjoin %>%
+    ssimjoin |>
       tidyr::nest(type3 = dplyr::all_of(collist[stringr::str_detect(collist,"type3.") | stringr::str_detect(collist,"flight.flight_date")])) -> ssimjoin2
     if (expand_sched)
     {
       for (i in 1:nrow(ssimjoin2)) {
-        ssimjoin2[i,]$type3[[1]] <- ssimjoin2[i,]$type3[[1]] %>% tidyr::nest(flights = dplyr::all_of(collist[stringr::str_detect(collist,"flight.flight_date")]))
+        ssimjoin2[i,]$type3[[1]] <- ssimjoin2[i,]$type3[[1]] |> tidyr::nest(flights = dplyr::all_of(collist[stringr::str_detect(collist,"flight.flight_date")]))
       }
     }
     ssimjoin <- ssimjoin2
@@ -348,11 +322,11 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
 
   if (clean_col_names)
   {
-    ssimjoin %>% dplyr::select_all(list(~stringr::str_replace(.,"(type2.)|(type3.)|(type4.)",""))) -> ssimjoin
+    ssimjoin |> dplyr::select_all(list(~stringr::str_replace(.,"(type2.)|(type3.)|(type4.)",""))) -> ssimjoin
     if (nested_df)
     {
       for (i in 1:nrow(ssimjoin)) {
-        ssimjoin[i,]$type3[[1]] <- ssimjoin[i,]$type3[[1]] %>% dplyr::select_all(list(~stringr::str_replace(.,"(type2.)|(type3.)|(type4.)","")))
+        ssimjoin[i,]$type3[[1]] <- ssimjoin[i,]$type3[[1]] |> dplyr::select_all(list(~stringr::str_replace(.,"(type2.)|(type3.)|(type4.)","")))
       }
     }
   }
@@ -377,8 +351,8 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
 #'
 #' @examples
 #' # Get 3 samples as a character vector
-#' samples <- data.frame(sampleid = c(1:3)) %>%
-#'  dplyr::rowwise() %>%
+#' samples <- data.frame(sampleid = c(1:3)) |>
+#'  dplyr::rowwise() |>
 #'  dplyr::mutate(
 #'  filename = tempfile(),
 #'  samplestring = ssimparser::get_ssim_sample(datefrom = as.Date("2020-11-01") + (sampleid * 3),
@@ -393,9 +367,9 @@ load_ssim <- function(ssim_file = get_ssim_sample(), nested_df = FALSE, collist 
 #' }
 #'
 #' # Load the 3 samples and display the total traffic per day
-#' ssimparser::load_ssim_flights(ssim_files = samples$filename) %>%
-#' dplyr::group_by(flight_date = as.Date(flight.flight_date)) %>%
-#' dplyr::summarise(total_flights = dplyr::n()) %>%
+#' ssimparser::load_ssim_flights(ssim_files = samples$filename) |>
+#' dplyr::group_by(flight_date = as.Date(flight.flight_date)) |>
+#' dplyr::summarise(total_flights = dplyr::n()) |>
 #' dplyr::arrange(desc(flight_date))
 #'
 #' # Unlink temp files
@@ -423,7 +397,7 @@ load_ssim_flights <- function(ssim_files = c("AFR_20201115.txt","AFR_20201116.tx
                                    collist = get_ssim_collist(getall = TRUE),
                                    clean_col_names = FALSE,
                                    unpivot_days_of_op = FALSE,
-                                   expand_sched = TRUE) %>%
+                                   expand_sched = TRUE) |>
                            dplyr::mutate(file_priority = priotity, flight_day = as.Date(flight.flight_date))
     )
 
@@ -431,20 +405,20 @@ load_ssim_flights <- function(ssim_files = c("AFR_20201115.txt","AFR_20201116.tx
   }
 
   # Pick the latest file available for each flight day
-  all_flights %>% dplyr::group_by(flight_day) %>%
-    dplyr::summarise(choosen = min(file_priority))  -> choosen_flights
+  all_flights |> dplyr::group_by(flight_day) |>
+    dplyr::reframe(choosen = min(file_priority))  -> choosen_flights
 
-  all_flights %>%
+  all_flights |>
     dplyr::inner_join(choosen_flights, by =  c("flight_day" = "flight_day", "file_priority" = "choosen")) -> all_flights
 
   # Filter selected columns
   collist[collist %in% colnames(all_flights)] -> collist
-  all_flights %>% dplyr::select(-file_priority) %>%
-    dplyr::select(collist) -> all_flights
+  all_flights |> dplyr::select(-file_priority) |>
+    dplyr::select(dplyr::all_of(collist)) -> all_flights
 
   if (clean_col_names)
   {
-    all_flights %>% dplyr::select_all(list(~stringr::str_replace(.,"(type2.)|(type3.)|(type4.)",""))) -> all_flights
+    all_flights |> dplyr::select_all(list(~stringr::str_replace(.,"(type2.)|(type3.)|(type4.)",""))) -> all_flights
   }
   return(all_flights)
 }

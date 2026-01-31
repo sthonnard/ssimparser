@@ -46,13 +46,13 @@ write(sample_ssim_string, sample_ssim_file, append = FALSE)
 # Load sample, expand schedules to flights and display the traffic
 # by month and departure airport ICAO
 ssimparser::load_ssim(ssim_file = sample_ssim_file,
-expand_sched = TRUE) \%>\%
-dplyr::group_by(format(flight.flight_date,"\%Y-\%m"), adep_icao) \%>\%
+expand_sched = TRUE) |>
+dplyr::group_by(format(flight.flight_date,"\%Y-\%m"), adep_icao) |>
 dplyr::summarise(n=dplyr::n())
 
 # Get the unique list of airports ICAO
 ssimparser::load_ssim(ssim_file = sample_ssim_file, expand_sched = TRUE,
-collist = c("type3.adep_icao", "type3.ades_icao")) \%>\% unique()
+collist = c("type3.adep_icao", "type3.ades_icao")) |> unique()
 
 # Nest the type 3 into type 2
 ssim_nested <- ssimparser::load_ssim(ssim_file = sample_ssim_file,

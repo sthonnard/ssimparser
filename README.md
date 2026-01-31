@@ -6,7 +6,7 @@ Parse IATA SSIM Schedules (Chapter 7) into a Data Frame.
 
 ## Example of SSIM file
 
-``` {style="width: 1600px;"}
+```{style="width:
 1AIRLINE STANDARD SCHEDULE DATA SET     1                                                                                                                                                      000000001
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -29,7 +29,7 @@ Parse IATA SSIM Schedules (Chapter 7) into a Data Frame.
 
 To install the latest version from github:
 
-``` {.R}
+```{.R}
 library(devtools)
 install_github("sthonnard/ssimparser")
 
@@ -40,18 +40,18 @@ library(ssimparser)
 
 Display a sample SSIM file:
 
-``` {.R}
+```{.R}
 ssimparser::get_ssim_sample()
 ```
 
 Parse the sample file into a Data Frame:
 
-``` {.R}
+```{.R}
 ssim_df <- ssimparser::load_ssim(ssim_file = get_ssim_sample())
 print(ssim_df)
 ```
 
-``` {style="width: 1700px;"}
+```{style="width:
 # A tibble: 3 x 15
 # Rowwise: 
   schedule_status iata_airline flight_number service_type period_from period_to days_of_operation adep_iata ades_iata aircraft_type_iata code_sharing std_utc             sta_utc             adep_icao ades_icao
@@ -63,18 +63,18 @@ print(ssim_df)
 
 Load any file from the filesystem:
 
-``` {.R}
+```{.R}
 ssim_df <- ssimparser::load_ssim(ssim_file = "/tmp/ssim.txt")
 ```
 
 Create one schedule per day of operation:
 
-``` {.R}
+```{.R}
 ssim_df <- ssimparser::load_ssim(ssim_file = get_ssim_sample(), unpivot_days_of_op = TRUE)
 print(ssim_df)
 ```
 
-``` {style="width: 1700px;"}
+```{style="width:
 # A tibble: 11 x 15
 # Rowwise: 
    schedule_status iata_airline flight_number service_type period_from period_to days_of_operati… adep_iata ades_iata aircraft_type_i… code_sharing std_utc            
@@ -95,12 +95,12 @@ print(ssim_df)
 
 Parse SSIM to a nested Data Frame, which could be useful for investigating in RStudio:
 
-``` {.R}
+```{.R}
 ssim_df <- ssimparser::load_ssim(ssim_file = get_ssim_sample(), nested_df = TRUE)
 print(ssim_df)
 ```
 
-``` {style="width: 1700px;"}
+```{style="width:
 # A tibble: 1 x 3
 # Rowwise: 
   schedule_status iata_airline type3            
@@ -108,11 +108,11 @@ print(ssim_df)
 1 C               AF           <tibble [3 × 13]>
 ```
 
-``` {.R}
+```{.R}
 print(ssim_df$type3)
 ```
 
-``` {style="width: 1700px;"}
+```{style="width:
 # A tibble: 3 x 13
 # Rowwise: 
   flight_number service_type period_from period_to days_of_operati… adep_iata ades_iata aircraft_type_i… code_sharing std_utc             sta_utc             adep_icao
@@ -125,14 +125,14 @@ print(ssim_df$type3)
 
 Expand the schedules to flights and display the traffic by month and departure airport ICAO:
 
-``` {.R}
+```{.R}
 library(dplyr)
  ssimparser::load_ssim(ssim_file = get_ssim_sample(), expand_sched = TRUE) %>%
    group_by(month = format(flight.flight_date,"%Y-%m"), adep_icao) %>%
    summarise(n = n())
 ```
 
-``` {style="width: 1700px;"}
+```{style="width:
 # A tibble: 2 x 3
 # Groups:   month [2]
   month   adep_icao     n
@@ -143,7 +143,7 @@ library(dplyr)
 
 Expand schedules to flights for multiple SSIM files:
 
-``` {.R}
+```{.R}
 library(dplyr)
 ssimparser::load_ssim_flights(ssim_files = c(get_ssim_sample(datefrom = as.Date("2020-11-01"), dateto = as.Date("2020-12-01")),
                                              get_ssim_sample(datefrom = as.Date("2020-11-15"), dateto = as.Date("2020-12-01")),
@@ -153,7 +153,7 @@ ssimparser::load_ssim_flights(ssim_files = c(get_ssim_sample(datefrom = as.Date(
   summarise(n = n())
 ```
 
-``` {style="width: 1700px;"}
+```{style="width:
 # A tibble: 2 x 3
 # Groups:   month [2]
   month   adep_icao     n
