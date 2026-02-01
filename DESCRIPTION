@@ -14,4 +14,4 @@ LazyData: false
 RoxygenNote: 7.3.3
 Imports: tidyr, dplyr, stringr, airportr
 Depends:
-  R (>= 4.5.0)
+  R (>= 4.4.3)
